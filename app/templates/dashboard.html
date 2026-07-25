@@ -1,49 +1,49 @@
 {% extends "base.html" %}
-{% block title %}Dashboard · DispoHub{% endblock %}
+{% block title %}{{ tr('dashboard.title') }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Dashboard</h1>
-  <span class="sub">Guten Tag, {{ user.name }} · {{ today()|datum }}</span>
+  <h1>{{ tr('dashboard.title') }}</h1>
+  <span class="sub">{{ tr('dashboard.greeting', name=user.name) }} · {{ today()|datum }}</span>
 </div>
 
 <div class="grid cols-3" style="margin-bottom:16px">
   <div class="card stat big">
-    <span class="lbl">Kosten aktueller Monat</span>
+    <span class="lbl">{{ tr('dashboard.costs_month') }}</span>
     <span class="num">{{ monatskosten|euro }}</span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Neue Schadenmeldungen</span>
+    <span class="lbl">{{ tr('dashboard.new_damages') }}</span>
     <span class="num" style="color:var(--bad-fg)">{{ neue_meldungen|length }}</span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Fahrzeuge in/vor Werkstatt</span>
+    <span class="lbl">{{ tr('dashboard.vehicles_in_workshop') }}</span>
     <span class="num" style="color:var(--warn-fg)">{{ fahrzeuge_reparatur|length }}</span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Neue Rechnungen</span>
+    <span class="lbl">{{ tr('dashboard.new_invoices') }}</span>
     <span class="num"><a href="/rechnungen">{{ neue_rechnungen }}</a></span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Ungeklärte Belege</span>
+    <span class="lbl">{{ tr('dashboard.unclear_receipts') }}</span>
     <span class="num" style="color:var(--bad-fg)">{{ ungeklaerte_belege }}</span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Ungelesene Nachrichten</span>
+    <span class="lbl">{{ tr('dashboard.unread_messages') }}</span>
     <span class="num"><a href="/chat">{{ ungelesene_nachrichten }}</a></span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Offene Aufgaben</span>
+    <span class="lbl">{{ tr('dashboard.open_tasks') }}</span>
     <span class="num"><a href="/aufgaben">{{ offene_aufgaben }}</a></span>
   </div>
   <div class="card stat big">
-    <span class="lbl">ADR-Mittel fällig</span>
+    <span class="lbl">{{ tr('dashboard.adr_due') }}</span>
     <span class="num" style="color:var(--warn-fg)">{{ adr_faellig }}</span>
   </div>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>🛠️ Offene Schäden <span class="count">{{ offene_schaeden|length }}</span></h2>
+    <h2>🛠️ {{ tr('dashboard.open_damages') }} <span class="count">{{ offene_schaeden|length }}</span></h2>
     <div class="rowlist">
       {% for d in offene_schaeden %}
       <div class="row">
@@ -52,75 +52,75 @@
           <div class="t"><a href="/schaeden/{{ d.id }}">{{ d.vehicle.kennzeichen }}</a></div>
           <div class="s">{{ d.beschreibung|truncate(48) }}</div>
         </div>
-        <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ d.status_label }}</span>
+        <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ tr('damage_status.' + d.status.value) }}</span>
       </div>
-      {% else %}<div class="empty">Keine offenen Schäden 🎉</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('dashboard.no_open_damages') }}</div>{% endfor %}
     </div>
   </div>
 
   <div class="card">
-    <h2>📅 Termine heute & überfällig</h2>
+    <h2>📅 {{ tr('dashboard.due_today_overdue') }}</h2>
     <div class="rowlist">
       {% for t in termine_ueberfaellig %}
       <div class="row">
         <span class="dot tone-bad"></span>
         <div class="grow"><div class="t">{{ t.titel }}</div>
-          <div class="s">{{ t.vehicle.kennzeichen if t.vehicle else 'Allgemein' }}</div></div>
-        <span class="badge tone-bad">überfällig · {{ t.faellig_am|datum }}</span>
+          <div class="s">{{ t.vehicle.kennzeichen if t.vehicle else tr('dashboard.general') }}</div></div>
+        <span class="badge tone-bad">{{ tr('dashboard.overdue') }} · {{ t.faellig_am|datum }}</span>
       </div>
       {% endfor %}
       {% for t in termine_heute %}
       <div class="row">
         <span class="dot tone-warn"></span>
         <div class="grow"><div class="t">{{ t.titel }}</div>
-          <div class="s">{{ t.vehicle.kennzeichen if t.vehicle else 'Allgemein' }}</div></div>
-        <span class="badge tone-warn">heute</span>
+          <div class="s">{{ t.vehicle.kennzeichen if t.vehicle else tr('dashboard.general') }}</div></div>
+        <span class="badge tone-warn">{{ tr('dashboard.today') }}</span>
       </div>
       {% endfor %}
-      {% if not termine_ueberfaellig and not termine_heute %}<div class="empty">Nichts Dringendes.</div>{% endif %}
+      {% if not termine_ueberfaellig and not termine_heute %}<div class="empty">{{ tr('dashboard.nothing_urgent') }}</div>{% endif %}
     </div>
   </div>
 
   <div class="card">
-    <h2>🚐 Fahrzeuge vor/in Werkstatt</h2>
+    <h2>🚐 {{ tr('dashboard.vehicles_workshop_title') }}</h2>
     <div class="rowlist">
       {% for v in fahrzeuge_reparatur %}
       <div class="row">
         <span class="dot tone-{{ v.status_tone }}"></span>
         <div class="grow"><div class="t"><a href="/fahrzeuge/{{ v.id }}">{{ v.kennzeichen }}</a></div>
           <div class="s">{{ v.hersteller }} {{ v.modell }}</div></div>
-        <span class="badge tone-{{ v.status_tone }}">{{ v.status_label }}</span>
+        <span class="badge tone-{{ v.status_tone }}">{{ tr('vehicle_status.' + v.status.value) }}</span>
       </div>
-      {% else %}<div class="empty">Alle Fahrzeuge einsatzbereit.</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('dashboard.all_vehicles_ready') }}</div>{% endfor %}
     </div>
   </div>
 
   <div class="card">
-    <h2>⏳ Bald fällig & Leasing</h2>
+    <h2>⏳ {{ tr('dashboard.due_soon_leasing') }}</h2>
     <div class="rowlist">
       {% for t in termine_bald %}
       <div class="row">
         <span class="dot tone-warn"></span>
         <div class="grow"><div class="t">{{ t.titel }}</div>
-          <div class="s">{{ t.vehicle.kennzeichen if t.vehicle else 'Allgemein' }}</div></div>
-        <span class="badge tone-warn">in {{ tage_bis(t.faellig_am) }} T</span>
+          <div class="s">{{ t.vehicle.kennzeichen if t.vehicle else tr('dashboard.general') }}</div></div>
+        <span class="badge tone-warn">{{ tr('dashboard.in_days', n=tage_bis(t.faellig_am)) }}</span>
       </div>
       {% endfor %}
       {% for v in leasing_auslaufend %}
       <div class="row">
         <span class="dot tone-{{ ampel_tone(v.leasing_ende, 60) }}"></span>
-        <div class="grow"><div class="t">Leasing {{ v.kennzeichen }}</div>
+        <div class="grow"><div class="t">{{ tr('dashboard.leasing', kennzeichen=v.kennzeichen) }}</div>
           <div class="s">{{ v.leasing_anbieter }}</div></div>
         <span class="badge tone-{{ ampel_tone(v.leasing_ende, 60) }}">{{ v.leasing_ende|datum }}</span>
       </div>
       {% endfor %}
-      {% if not termine_bald and not leasing_auslaufend %}<div class="empty">Nichts in den nächsten Wochen.</div>{% endif %}
+      {% if not termine_bald and not leasing_auslaufend %}<div class="empty">{{ tr('dashboard.nothing_next_weeks') }}</div>{% endif %}
     </div>
   </div>
 
   {% if geburtstage_bald %}
   <div class="card">
-    <h2>🎂 Geburtstage</h2>
+    <h2>🎂 {{ tr('dashboard.birthdays') }}</h2>
     <div class="rowlist">
       {% for m in geburtstage_bald %}
       <div class="row">
@@ -128,7 +128,7 @@
         <div class="grow"><div class="t">{{ m.name }}</div>
           <div class="s">{{ m.geburtstag.strftime('%d.%m.') }}</div></div>
         {% set tb = tage_bis_geburtstag(m.geburtstag) %}
-        <span class="badge tone-info">{{ 'heute' if tb == 0 else 'in ' + tb|string + ' T' }}</span>
+        <span class="badge tone-info">{{ tr('dashboard.today') if tb == 0 else tr('dashboard.in_days', n=tb) }}</span>
       </div>
       {% endfor %}
     </div>
