@@ -1,43 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Aufgaben · DispoHub{% endblock %}
+{% block title %}{{ tr('tasks.title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Aufgaben</h1><span class="sub">{{ offene|length }} offen</span>
+<div class="page-head"><h1>{{ tr('tasks.title') }}</h1><span class="sub">{{ tr('tasks.open_count', n=offene|length) }}</span>
   <div class="spacer"></div>
-  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">{{ tr('common.print') }}</button>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>➕ Neue Aufgabe</h2>
+    <h2>{{ tr('tasks.new_task') }}</h2>
     <form method="post" action="/aufgaben">
-      <label for="titel">Titel</label>
-      <input id="titel" name="titel" placeholder="z.B. TÜV diese Woche" required>
+      <label for="titel">{{ tr('tasks.col_title') }}</label>
+      <input id="titel" name="titel" placeholder="{{ tr('tasks.title_placeholder') }}" required>
 
-      <label for="beschreibung">Beschreibung (optional)</label>
+      <label for="beschreibung">{{ tr('tasks.description_optional') }}</label>
       <textarea id="beschreibung" name="beschreibung" style="min-height:60px"></textarea>
 
-      <label for="faellig_am">Fällig bis (optional)</label>
+      <label for="faellig_am">{{ tr('tasks.due_optional') }}</label>
       <input id="faellig_am" name="faellig_am" type="date">
 
-      <label for="zugewiesen_user_id">Zugewiesen an (optional)</label>
+      <label for="zugewiesen_user_id">{{ tr('tasks.assigned_to_optional') }}</label>
       <select id="zugewiesen_user_id" name="zugewiesen_user_id">
-        <option value="">— alle Fahrer / allgemein —</option>
+        <option value="">{{ tr('tasks.all_drivers_general') }}</option>
         {% for f in fahrer %}<option value="{{ f.id }}">{{ f.name }}</option>{% endfor %}
       </select>
 
-      <label for="vehicle_id">Betrifft Fahrzeug (optional)</label>
+      <label for="vehicle_id">{{ tr('tasks.affects_vehicle_optional') }}</label>
       <select id="vehicle_id" name="vehicle_id">
-        <option value="">— kein bestimmtes Fahrzeug —</option>
+        <option value="">{{ tr('tasks.no_specific_vehicle') }}</option>
         {% for v in fahrzeuge %}<option value="{{ v.id }}">{{ v.kennzeichen }} — {{ v.hersteller }} {{ v.modell }}</option>{% endfor %}
       </select>
 
       <div style="height:12px"></div>
-      <button class="btn block" type="submit">Aufgabe anlegen</button>
+      <button class="btn block" type="submit">{{ tr('tasks.create_task') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>📋 Offen <span class="count">{{ offene|length }}</span></h2>
+    <h2>{{ tr('tasks.open_title') }} <span class="count">{{ offene|length }}</span></h2>
     <div class="rowlist">
       {% for t in offene %}
       <div class="row">
@@ -45,31 +45,31 @@
         <div class="grow">
           <div class="t">{{ t.titel }}</div>
           <div class="s">
-            {% if t.zugewiesen %}{{ t.zugewiesen.name }}{% else %}alle Fahrer{% endif %}
+            {% if t.zugewiesen %}{{ t.zugewiesen.name }}{% else %}{{ tr('tasks.all_drivers') }}{% endif %}
             {% if t.vehicle %} · {{ t.vehicle.kennzeichen }}{% endif %}
-            {% if t.faellig_am %} · fällig {{ t.faellig_am|datum }}{% endif %}
+            {% if t.faellig_am %} · {{ tr('tasks.due', datum=t.faellig_am|datum) }}{% endif %}
           </div>
         </div>
         <form method="post" action="/aufgaben/{{ t.id }}/erledigt"
-              onsubmit="return confirm('„{{ t.titel }}“ als erledigt markieren?')">
-          <button class="btn ghost sm" type="submit">✓ Erledigt</button>
+              onsubmit="return confirm('{{ tr('tasks.confirm_done', titel=t.titel) }}')">
+          <button class="btn ghost sm" type="submit">{{ tr('tasks.mark_done') }}</button>
         </form>
       </div>
-      {% else %}<div class="empty">Keine offenen Aufgaben.</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('tasks.no_open_tasks') }}</div>{% endfor %}
     </div>
   </div>
 </div>
 
 <div class="card" style="margin-top:16px">
-  <h2>✓ Zuletzt erledigt</h2>
+  <h2>{{ tr('tasks.recently_done') }}</h2>
   <div class="rowlist">
     {% for t in erledigte %}
     <div class="row">
       <div class="grow"><div class="t">{{ t.titel }}</div>
-        <div class="s">{{ t.zugewiesen.name if t.zugewiesen else 'alle Fahrer' }}</div></div>
+        <div class="s">{{ t.zugewiesen.name if t.zugewiesen else tr('tasks.all_drivers') }}</div></div>
       <span class="badge tone-ok">{{ t.erledigt_am|datumzeit }}</span>
     </div>
-    {% else %}<div class="empty">Noch nichts erledigt.</div>{% endfor %}
+    {% else %}<div class="empty">{{ tr('tasks.nothing_done_yet') }}</div>{% endfor %}
   </div>
 </div>
 {% endblock %}
