@@ -8,18 +8,6 @@ BEREICHE = [
     "kosten", "rechnungen", "export", "tankkarten", "aufgaben",
 ]
 
-BEREICH_LABELS = {
-    "fahrzeuge": "Fahrzeuge",
-    "mitarbeiter": "Mitarbeiter",
-    "kalender": "Kalender",
-    "schaeden": "Schäden & Reparaturen",
-    "kosten": "Kosten",
-    "rechnungen": "Rechnungen",
-    "export": "Steuer-Export",
-    "tankkarten": "Tankkarten",
-    "aufgaben": "Aufgaben",
-}
-
 
 def is_erlaubt(db: Session, user: User, bereich: str) -> bool:
     """Admin/GF: immer erlaubt. Büro: abhängig von der Einstellung. Alle anderen: nie."""
@@ -31,7 +19,7 @@ def is_erlaubt(db: Session, user: User, bereich: str) -> bool:
     return perm.buero_erlaubt if perm else True
 
 
-def alle_bereiche_mit_status(db: Session) -> list[tuple[str, str, bool]]:
-    """Für die Einstellungsseite: (bereich, label, aktuell_erlaubt) je bekanntem Bereich."""
+def alle_bereiche_mit_status(db: Session) -> list[tuple[str, bool]]:
+    """Für die Einstellungsseite: (bereich, aktuell_erlaubt) je bekanntem Bereich."""
     vorhanden = {p.bereich: p.buero_erlaubt for p in db.query(AreaPermission).all()}
-    return [(b, BEREICH_LABELS[b], vorhanden.get(b, True)) for b in BEREICHE]
+    return [(b, vorhanden.get(b, True)) for b in BEREICHE]

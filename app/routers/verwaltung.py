@@ -8,8 +8,6 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.deps import require_gf_or_admin
 from app.models import User, Role, UserStatus, Vehicle, VehicleTyp, VehicleStatus
-from app.models.user import ROLE_LABELS
-from app.models.vehicle import VEHICLE_TYP_LABELS
 from app.security import hash_password, generiere_passwort
 from app.services import backup, papierkorb
 from app.services.app_settings import get_setting, set_setting, LOGO_PFAD, FIRMEN_WEBSITE
@@ -36,8 +34,8 @@ def uebersicht(request: Request, user=Depends(require_gf_or_admin), db: Session 
             "request": request, "user": user, "active": "verwaltung",
             "mitarbeiter": mitarbeiter, "fahrzeuge": fahrzeuge,
             "korb_users": korb_users, "korb_vehicles": korb_vehicles,
-            "rollen": [(r.value, label) for r, label in ROLE_LABELS.items()],
-            "typen": [(t.value, label) for t, label in VEHICLE_TYP_LABELS.items()],
+            "rollen": [r.value for r in Role],
+            "typen": [t.value for t in VehicleTyp],
             "tage_verbleibend": papierkorb.tage_verbleibend,
             "aufbewahrung": papierkorb.AUFBEWAHRUNG_TAGE,
             "logo_pfad": get_setting(db, LOGO_PFAD),

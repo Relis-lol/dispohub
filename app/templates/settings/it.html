@@ -1,34 +1,33 @@
 {% extends "base.html" %}
-{% block title %}IT-Zugriff · DispoHub{% endblock %}
+{% block title %}{{ tr('settings.it_title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>IT-Zugriff</h1>
-  <span class="sub">Technische Übersicht — bewusst ohne Kosten, Rechnungen oder Kontaktdaten.</span></div>
+<div class="page-head"><h1>{{ tr('settings.it_title') }}</h1>
+  <span class="sub">{{ tr('settings.it_subtitle') }}</span></div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>Mitarbeiter <span class="count">{{ mitarbeiter|length }}</span></h2>
+    <h2>{{ tr('drivers.title') }} <span class="count">{{ mitarbeiter|length }}</span></h2>
     <div class="rowlist">
       {% for m in mitarbeiter %}
-      <div class="row"><span class="grow t">{{ m.name }}</span><span class="muted">{{ m.role_label }}</span></div>
+      <div class="row"><span class="grow t">{{ m.name }}</span><span class="muted">{{ tr('role.' + m.role.value) }}</span></div>
       {% endfor %}
     </div>
   </div>
 
   <div class="card">
-    <h2>Fahrzeuge <span class="count">{{ fahrzeuge|length }}</span></h2>
+    <h2>{{ tr('settings.vehicles_title') }} <span class="count">{{ fahrzeuge|length }}</span></h2>
     <div class="rowlist">
       {% for v in fahrzeuge %}
-      <div class="row"><span class="grow t">{{ v.kennzeichen }}</span><span class="muted">{{ v.typ_label }}</span></div>
+      <div class="row"><span class="grow t">{{ v.kennzeichen }}</span><span class="muted">{{ tr('vehicle_typ.' + v.typ.value) }}</span></div>
       {% endfor %}
     </div>
   </div>
 </div>
 
 <div class="card" style="margin-top:16px">
-  <h2>Hinweis</h2>
+  <h2>{{ tr('settings.it_note_title') }}</h2>
   <p class="muted" style="margin:0">
-    Weitere technische Verwaltung (Fahrzeuge/Mitarbeiter anlegen &amp; entfernen mit
-    Papierkorb-Funktion, Integrationen) folgt in einer späteren Ausbaustufe.
+    {{ tr('settings.it_note_text') }}
   </p>
 </div>
 {% endblock %}

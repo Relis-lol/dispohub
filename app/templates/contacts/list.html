@@ -20,7 +20,7 @@
                 title="{{ tr('contacts.reachable') if k.ist_erreichbar else tr('contacts.not_reachable') }}"></span>
           <div class="grow">
             <div class="t">{{ k.name }}</div>
-            <div class="s">{{ k.role_label }}</div>
+            <div class="s">{{ tr('role.' + k.role.value) }}</div>
           </div>
           {% if k.ist_erreichbar %}
           <a href="tel:{{ k.phone|replace(' ', '') }}" class="btn ok sm">{{ tr('contacts.call') }}</a>

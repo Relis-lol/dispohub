@@ -1,22 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Mitarbeiter angelegt · DispoHub{% endblock %}
+{% block title %}{{ tr('settings.employee_created_title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>✓ Mitarbeiter angelegt</h1></div>
+<div class="page-head"><h1>{{ tr('settings.employee_created_title') }}</h1></div>
 
 <div class="card" style="max-width:480px">
   <h2>{{ neuer_mitarbeiter.name }}</h2>
   <div class="rowlist">
-    <div class="row"><span class="grow s">E-Mail (Anmeldung)</span><span class="t">{{ neuer_mitarbeiter.email }}</span></div>
-    <div class="row"><span class="grow s">Start-Passwort</span>
+    <div class="row"><span class="grow s">{{ tr('settings.login_email') }}</span><span class="t">{{ neuer_mitarbeiter.email }}</span></div>
+    <div class="row"><span class="grow s">{{ tr('settings.start_password') }}</span>
       <span class="t" style="font-family:monospace;font-size:16px;letter-spacing:1px">{{ passwort }}</span></div>
   </div>
   <p class="muted" style="font-size:13px;margin-top:14px">
-    ⚠️ Dieses Passwort wird nur jetzt einmal angezeigt und nirgendwo gespeichert.
-    Bitte notieren und an {{ neuer_mitarbeiter.name.split(' ')[0] }} weitergeben.
-    Beim ersten Login wird direkt zur Passwort-Änderung weitergeleitet — dort kann
-    der Browser das neue, selbst gewählte Passwort speichern.
+    {{ tr('settings.password_shown_once', vorname=neuer_mitarbeiter.name.split(' ')[0]) }}
   </p>
   <div style="height:14px"></div>
-  <a href="/verwaltung" class="btn">Weiter zur Verwaltung</a>
+  <a href="/verwaltung" class="btn">{{ tr('settings.continue_to_admin') }}</a>
 </div>
 {% endblock %}
