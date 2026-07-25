@@ -483,6 +483,11 @@ DE = {
     "forms.no_approved_requests_yet": "Noch keine genehmigten Urlaubsanträge.",
     "forms.back_forms": "← Vordrucke",
     "forms.print_or_pdf": "🖨️ Drucken / Als PDF speichern",
+    "notes.title": "Notizen",
+    "notes.subtitle": "Intern zwischen Geschäftsführung und Büro",
+    "notes.placeholder": "Kurze Notiz für die Kollegen…",
+    "notes.save_note": "Notiz speichern",
+    "notes.no_notes_yet": "Noch keine Notizen.",
 }
 
 CS = {
@@ -956,6 +961,11 @@ CS = {
     "forms.no_approved_requests_yet": "Zatím žádné schválené žádosti o dovolenou.",
     "forms.back_forms": "← Formuláře",
     "forms.print_or_pdf": "🖨️ Tisk / Uložit jako PDF",
+    "notes.title": "Poznámky",
+    "notes.subtitle": "Interní mezi vedením a kanceláří",
+    "notes.placeholder": "Krátká poznámka pro kolegy…",
+    "notes.save_note": "Uložit poznámku",
+    "notes.no_notes_yet": "Zatím žádné poznámky.",
 }
 
 EN = {
@@ -1429,6 +1439,11 @@ EN = {
     "forms.no_approved_requests_yet": "No approved vacation requests yet.",
     "forms.back_forms": "← Forms",
     "forms.print_or_pdf": "🖨️ Print / Save as PDF",
+    "notes.title": "Notes",
+    "notes.subtitle": "Internal, between management and office",
+    "notes.placeholder": "Short note for colleagues…",
+    "notes.save_note": "Save note",
+    "notes.no_notes_yet": "No notes yet.",
 }
 
 RU = {
@@ -1902,6 +1917,11 @@ RU = {
     "forms.no_approved_requests_yet": "Одобренных заявок на отпуск пока нет.",
     "forms.back_forms": "← Бланки",
     "forms.print_or_pdf": "🖨️ Печать / Сохранить как PDF",
+    "notes.title": "Заметки",
+    "notes.subtitle": "Внутреннее, между руководством и офисом",
+    "notes.placeholder": "Короткая заметка для коллег…",
+    "notes.save_note": "Сохранить заметку",
+    "notes.no_notes_yet": "Заметок пока нет.",
 }
 
 PL = {
@@ -2375,6 +2395,11 @@ PL = {
     "forms.no_approved_requests_yet": "Brak jeszcze zatwierdzonych wniosków urlopowych.",
     "forms.back_forms": "← Formularze",
     "forms.print_or_pdf": "🖨️ Drukuj / Zapisz jako PDF",
+    "notes.title": "Notatki",
+    "notes.subtitle": "Wewnętrzne, między zarządem a biurem",
+    "notes.placeholder": "Krótka notatka dla kolegów…",
+    "notes.save_note": "Zapisz notatkę",
+    "notes.no_notes_yet": "Brak jeszcze notatek.",
 }
 
 TR = {
@@ -2848,6 +2873,11 @@ TR = {
     "forms.no_approved_requests_yet": "Henüz onaylanmış izin talebi yok.",
     "forms.back_forms": "← Formlar",
     "forms.print_or_pdf": "🖨️ Yazdır / PDF olarak kaydet",
+    "notes.title": "Notlar",
+    "notes.subtitle": "Yönetim ve ofis arasında dahili",
+    "notes.placeholder": "Meslektaşlar için kısa not…",
+    "notes.save_note": "Notu kaydet",
+    "notes.no_notes_yet": "Henüz not yok.",
 }
 
 TRANSLATIONS = {"de": DE, "cs": CS, "en": EN, "ru": RU, "pl": PL, "tr": TR}

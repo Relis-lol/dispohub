@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Notizen · DispoHub{% endblock %}
+{% block title %}{{ tr('notes.title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Notizen</h1><span class="sub">Intern zwischen Geschäftsführung und Büro</span></div>
+<div class="page-head"><h1>{{ tr('notes.title') }}</h1><span class="sub">{{ tr('notes.subtitle') }}</span></div>
 
 <div class="card" style="margin-bottom:16px">
   <form method="post" action="/notizen">
-    <textarea name="text" placeholder="Kurze Notiz für die Kollegen…" required style="min-height:70px"></textarea>
+    <textarea name="text" placeholder="{{ tr('notes.placeholder') }}" required style="min-height:70px"></textarea>
     <div style="height:8px"></div>
-    <button class="btn" type="submit">Notiz speichern</button>
+    <button class="btn" type="submit">{{ tr('notes.save_note') }}</button>
   </form>
 </div>
 
@@ -20,7 +20,7 @@
         <div class="s">{{ n.ersteller.name }} · {{ n.created_at|datumzeit }}</div>
       </div>
     </div>
-    {% else %}<div class="empty">Noch keine Notizen.</div>{% endfor %}
+    {% else %}<div class="empty">{{ tr('notes.no_notes_yet') }}</div>{% endfor %}
   </div>
 </div>
 {% endblock %}
