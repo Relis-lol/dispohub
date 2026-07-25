@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% import "partials/vehicle_svg.html" as vs %}
+{% block title %}Draufsicht {{ v.kennzeichen }} · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Schaden-Draufsicht · {{ v.kennzeichen }}</h1>
+  <span class="sub">{{ v.typ_label }}{% if v.untertyp %} · {{ v.untertyp }}{% endif %}</span>
+  <div class="spacer"></div>
+  <a href="/fahrzeuge/{{ v.id }}" class="btn ghost sm">← Fahrzeugakte</a>
+</div>
+
+<p class="muted">Auf die Stelle tippen, an der der Schaden ist — wie mit einem Stift.
+  Danach kurz beschreiben und speichern. Bestehende Markierungen anklicken, um den
+  Vorgang zu öffnen.</p>
+
+<div class="draufsicht-wrap">
+  <div id="diagram" class="draufsicht-diagram">
+    {{ vs.vehicle_shape(v.typ.value) }}
+    {% for d in pins %}
+    <a href="/schaeden/{{ d.id }}" class="pin tone-{{ 'ok' if d.status.value == 'erledigt' else ('warn' if d.status.value == 'in_reparatur' else 'bad') }}"
+       style="left: {{ (d.position_x * 100)|round(1) }}%; top: {{ (d.position_y * 100)|round(1) }}%"
+       title="{{ d.beschreibung }}">
+      {{ '✓' if d.status.value == 'erledigt' else '!' }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="draufsicht-legend">
+    <span class="pin-legend tone-bad"></span> offen/in Bearbeitung
+    <span class="pin-legend tone-warn"></span> in Reparatur
+    <span class="pin-legend tone-ok"></span> repariert
+  </div>
+</div>
+
+<div id="pin-form" class="card kulli-card" style="margin-top:14px; display:none">
+  <form method="post" action="/fahrzeuge/{{ v.id }}/schaden-pin" enctype="multipart/form-data">
+    <input type="hidden" name="position_x" id="pin-x">
+    <input type="hidden" name="position_y" id="pin-y">
+    <input type="hidden" name="schadensdatum" value="{{ today().strftime('%Y-%m-%d') }}" id="pin-datum-hidden">
+
+    <div class="kulli-row">
+      <textarea id="beschreibung" name="beschreibung" placeholder="Was ist hier beschädigt? (kurz)"
+                required rows="2"></textarea>
+      <button class="btn" type="submit">✓ Speichern</button>
+      <button type="button" class="btn ghost" id="pin-abbrechen">✕</button>
+    </div>
+
+    <details class="kulli-details">
+      <summary>+ Weitere Details (Ort, Datum, Fotos, Dringlichkeit — optional)</summary>
+      <div class="grid cols-2" style="margin-top:10px">
+        <div>
+          <label for="schadensdatum">Wann entstanden?</label>
+          <input id="schadensdatum" name="schadensdatum_sichtbar" type="date"
+                 value="{{ today().strftime('%Y-%m-%d') }}"
+                 onchange="document.getElementById('pin-datum-hidden').value=this.value">
+        </div>
+        <div>
+          <label for="ort">Wo entstanden?</label>
+          <input id="ort" name="ort" placeholder="z.B. Betriebshof, A9 Rasthof...">
+        </div>
+      </div>
+      <label for="prioritaet">Dringlichkeit</label>
+      <select id="prioritaet" name="prioritaet">
+        {% for p in priorities %}
+        <option value="{{ p.value }}" {{ 'selected' if p.value == 'normal' }}>{{ priority_labels[p.value] }}</option>
+        {% endfor %}
+      </select>
+      <label for="fotos">Fotos</label>
+      <input id="fotos" name="fotos" type="file" accept="image/*" multiple>
+    </details>
+  </form>
+</div>
+
+<script>
+(function () {
+  const diagram = document.getElementById("diagram");
+  const form = document.getElementById("pin-form");
+  const xInput = document.getElementById("pin-x");
+  const yInput = document.getElementById("pin-y");
+  const beschreibung = document.getElementById("beschreibung");
+  let tempDot = null;
+
+  diagram.addEventListener("click", function (e) {
+    if (e.target.closest(".pin")) return; // bestehende Markierung -> Link folgt normal
+    const rect = diagram.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const xc = Math.max(0, Math.min(1, x));
+    const yc = Math.max(0, Math.min(1, y));
+    xInput.value = xc.toFixed(4);
+    yInput.value = yc.toFixed(4);
+
+    // Sofortiges "Tinten"-Feedback wie ein Stift auf Papier.
+    if (tempDot) tempDot.remove();
+    tempDot = document.createElement("div");
+    tempDot.className = "pin pin-temp tone-bad";
+    tempDot.style.left = (xc * 100) + "%";
+    tempDot.style.top = (yc * 100) + "%";
+    diagram.appendChild(tempDot);
+
+    form.style.display = "block";
+    beschreibung.value = "";
+    beschreibung.focus();
+  });
+
+  document.getElementById("pin-abbrechen").addEventListener("click", function () {
+    form.style.display = "none";
+    if (tempDot) { tempDot.remove(); tempDot = null; }
+  });
+})();
+</script>
+{% endblock %}

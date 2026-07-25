@@ -1,0 +1,39 @@
+{% extends "forms/_base.html" %}
+{% block title %}Arbeitszeitnachweis{% endblock %}
+{% block kopf %}Arbeitszeitnachweis — {{ monat_label }}{% endblock %}
+{% block untertitel %}
+Name: <span class="feld">{{ m.name if m else '' }}</span>
+&nbsp;&nbsp;Personal-Nr.: <span class="feld" style="min-width:90px"></span>
+{% endblock %}
+{% block inhalt %}
+<table>
+  <thead>
+    <tr>
+      <th style="width:90px">Tag</th>
+      <th style="width:80px">Von</th>
+      <th style="width:80px">Bis</th>
+      <th style="width:80px">Pause</th>
+      <th style="width:90px">Stunden</th>
+      <th>Bemerkung</th>
+      <th style="width:120px">Unterschrift</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for tag in tage %}
+    <tr {% if tag.weekday() >= 5 %}style="background:#f2f2f2"{% endif %}>
+      <td>{{ ['Mo','Di','Mi','Do','Fr','Sa','So'][tag.weekday()] }} {{ tag.strftime('%d.%m.') }}</td>
+      <td class="blank"></td><td class="blank"></td><td class="blank"></td>
+      <td class="blank"></td><td class="blank"></td><td class="blank"></td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <th colspan="4" style="text-align:right">Gesamtstunden:</th>
+      <td class="blank"></td><td colspan="2"></td>
+    </tr>
+  </tbody>
+</table>
+<div class="unterschriften">
+  <div>Datum, Unterschrift Mitarbeiter</div>
+  <div>Datum, Unterschrift Arbeitgeber</div>
+</div>
+{% endblock %}

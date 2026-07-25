@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ tr('nav.chat') }} · DispoHub</title>
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/notifications.js" defer></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+  <meta name="theme-color" content="#1c4a80">
+</head>
+<body class="has-tabbar">
+  {% include "partials/mobile_topbar.html" %}
+  <div class="mobile-main">
+    <h2 style="margin:6px 0 12px">{{ tr('chat.title') }}</h2>
+    <div class="chat-threads mobile">
+      {% for th in threads %}
+      <a href="/chat/{{ th.id }}" class="thread">
+        <span class="ico">{{ '👥' if th.art.value == 'gruppe' else '👤' }}</span>
+        <span class="grow">
+          <span class="tname">{{ th.anzeige_name(user) }}</span>
+          {% if th.messages %}
+          <span class="tprev">{{ (tr('chat.deleted') if th.messages[-1].geloescht else (th.messages[-1].text or tr('chat.photo_short')))|truncate(34) }}</span>
+          {% endif %}
+        </span>
+        {% if unread.get(th.id) %}<span class="badge tone-bad">{{ unread[th.id] }}</span>{% endif %}
+      </a>
+      {% else %}<div class="empty">{{ tr('chat.empty_threads') }}</div>{% endfor %}
+    </div>
+  </div>
+  {% include "partials/mobile_nav.html" %}
+</body>
+</html>

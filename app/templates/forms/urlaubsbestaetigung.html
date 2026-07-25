@@ -1,0 +1,29 @@
+{% extends "forms/_base.html" %}
+{% block title %}Urlaubsbestätigung{% endblock %}
+{% block kopf %}Urlaubsbestätigung{% endblock %}
+{% block untertitel %}Bestätigung des Arbeitgebers über genommenen Erholungsurlaub{% endblock %}
+{% block inhalt %}
+<p style="margin-top:18px">
+  Hiermit wird bestätigt, dass
+</p>
+<div class="feldzeile" style="font-size:15px;font-weight:600">
+  {{ antrag.user.name }}
+</div>
+<p>
+  im Zeitraum vom <strong>{{ antrag.von|datum }}</strong> bis einschließlich
+  <strong>{{ antrag.bis|datum }}</strong> ({{ antrag.tage }} Kalendertage)
+  genehmigten Erholungsurlaub hatte und in diesem Zeitraum <strong>nicht im
+  Betrieb tätig</strong> war.
+</p>
+{% if antrag.notiz %}<p>Anmerkung zum Antrag: {{ antrag.notiz }}</p>{% endif %}
+<p>
+  Der Urlaub wurde am {{ antrag.entschieden_am|datumzeit if antrag.entschieden_am else '—' }}
+  {% if antrag.entschieden_von %}durch {{ antrag.entschieden_von.name }}{% endif %} genehmigt
+  und auf das Urlaubskonto angerechnet.
+</p>
+<div class="feldzeile" style="margin-top:30px">Ausgestellt am: <strong>{{ heute|datum }}</strong></div>
+<div class="unterschriften">
+  <div>Datum, Unterschrift Arbeitgeber / Stempel</div>
+  <div>Zur Kenntnis genommen: Mitarbeiter</div>
+</div>
+{% endblock %}

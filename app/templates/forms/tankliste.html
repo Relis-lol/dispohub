@@ -1,0 +1,38 @@
+{% extends "forms/_base.html" %}
+{% block title %}Tankliste{% endblock %}
+{% block kopf %}Tankliste — {{ monat_label }}{% endblock %}
+{% block untertitel %}
+Fahrzeug: <span class="feld">{{ v.kennzeichen ~ ' · ' ~ v.hersteller ~ ' ' ~ v.modell if v else '' }}</span>
+&nbsp;&nbsp;Fahrer: <span class="feld" style="min-width:160px"></span>
+{% endblock %}
+{% block inhalt %}
+<table>
+  <thead>
+    <tr>
+      <th style="width:90px">Tag</th>
+      <th style="width:90px">km-Stand</th>
+      <th style="width:90px">Diesel (l)</th>
+      <th style="width:90px">AdBlue (l)</th>
+      <th>Tankstelle / Ort</th>
+      <th style="width:120px">Unterschrift</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for tag in tage %}
+    <tr {% if tag.weekday() >= 5 %}style="background:#f2f2f2"{% endif %}>
+      <td>{{ ['Mo','Di','Mi','Do','Fr','Sa','So'][tag.weekday()] }} {{ tag.strftime('%d.%m.') }}</td>
+      <td class="blank"></td><td class="blank"></td><td class="blank"></td>
+      <td class="blank"></td><td class="blank"></td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <th colspan="2" style="text-align:right">Summe:</th>
+      <td class="blank"></td><td class="blank"></td><td colspan="2"></td>
+    </tr>
+  </tbody>
+</table>
+<div class="unterschriften">
+  <div>Datum, Unterschrift Fahrer</div>
+  <div>Datum, Unterschrift Fuhrparkleitung</div>
+</div>
+{% endblock %}

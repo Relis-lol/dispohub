@@ -1,0 +1,72 @@
+<aside class="sidebar">
+  {% set b = branding() %}
+  {% if b.logo %}
+  <div class="brand brand-logo">
+    {% if b.website %}<a href="{{ b.website }}" target="_blank" rel="noopener" title="Firmen-Website öffnen">
+      <img src="{{ b.logo }}" alt="Firmenlogo"></a>
+    {% else %}<img src="{{ b.logo }}" alt="Firmenlogo">{% endif %}
+  </div>
+  {% else %}
+  <div class="brand">Fleet<span>Hub</span></div>
+  {% endif %}
+  <nav class="nav">
+    {% if user and user.role.value == 'it' %}
+    <a href="/it" class="{{ 'active' if active == 'it' }}">
+      <span class="ico">🖥️</span><span class="lbl">IT-Bereich</span></a>
+    {% else %}
+    <a href="/" class="{{ 'active' if active == 'dashboard' }}">
+      <span class="ico">🏠</span><span class="lbl">Dashboard</span></a>
+    <a href="/schaeden" class="{{ 'active' if active == 'schaeden' }}">
+      <span class="ico">🛠️</span><span class="lbl">Schäden</span>
+      {% if neue_meldungen %}<span class="badge tone-bad">{{ neue_meldungen|length }}</span>{% endif %}
+    </a>
+    <a href="/fahrzeuge" class="{{ 'active' if active == 'fahrzeuge' }}">
+      <span class="ico">🚐</span><span class="lbl">Fahrzeuge</span></a>
+    <a href="/kalender" class="{{ 'active' if active == 'kalender' }}">
+      <span class="ico">📅</span><span class="lbl">Kalender</span></a>
+    <a href="/chat" class="{{ 'active' if active == 'chat' }}">
+      <span class="ico">💬</span><span class="lbl">Chat</span>
+      {% set cu = nav_chat_unread(user) %}
+      {% if cu %}<span class="badge tone-bad">{{ cu }}</span>{% endif %}
+    </a>
+    <a href="/rechnungen" class="{{ 'active' if active == 'rechnungen' }}">
+      <span class="ico">📨</span><span class="lbl">Rechnungen</span></a>
+    <a href="/kosten" class="{{ 'active' if active == 'kosten' }}">
+      <span class="ico">💶</span><span class="lbl">Kosten</span></a>
+    <a href="/tankkarten" class="{{ 'active' if active == 'tankkarten' }}">
+      <span class="ico">⛽</span><span class="lbl">Tankkarten</span></a>
+    <a href="/export" class="{{ 'active' if active == 'export' }}">
+      <span class="ico">📑</span><span class="lbl">Steuer-Export</span></a>
+    <a href="/mitarbeiter" class="{{ 'active' if active == 'mitarbeiter' }}">
+      <span class="ico">👥</span><span class="lbl">Mitarbeiter</span></a>
+    <a href="/aufgaben" class="{{ 'active' if active == 'aufgaben' }}">
+      <span class="ico">📋</span><span class="lbl">Aufgaben</span></a>
+    <a href="/umfragen" class="{{ 'active' if active == 'umfragen' }}">
+      <span class="ico">📊</span><span class="lbl">Umfragen</span></a>
+    <a href="/vordrucke" class="{{ 'active' if active == 'vordrucke' }}">
+      <span class="ico">🖨️</span><span class="lbl">Vordrucke</span></a>
+    <a href="/notizen" class="{{ 'active' if active == 'notizen' }}">
+      <span class="ico">📝</span><span class="lbl">Notizen</span></a>
+    {% if user and user.role.value in ['admin', 'geschaeftsfuehrung'] %}
+    <a href="/verwaltung" class="{{ 'active' if active == 'verwaltung' }}">
+      <span class="ico">🧰</span><span class="lbl">Verwaltung</span></a>
+    <a href="/einstellungen/rechte" class="{{ 'active' if active == 'einstellungen' }}">
+      <span class="ico">⚙️</span><span class="lbl">Einstellungen</span></a>
+    {% endif %}
+    {% endif %}
+  </nav>
+  <div class="sidebar-foot">
+    {% if user %}<div class="who">{{ user.name }}<br><span class="muted">{{ user.role_label }}</span></div>{% endif %}
+    <button type="button" class="btn ghost sm block" onclick="fhRequestNotificationPermission()">
+      <span class="notify-toggle-label">🔕</span> Benachrichtigungen
+    </button>
+    <div style="height:6px"></div>
+    <button type="button" class="btn ghost sm block" onclick="fhToggleTheme()">
+      <span class="theme-toggle-label">🌙</span> Hell/Dunkel
+    </button>
+    <div style="height:6px"></div>
+    <a href="/passwort" class="btn ghost sm block">🔑 Passwort ändern</a>
+    <div style="height:6px"></div>
+    <a href="/logout" class="btn ghost sm block">Abmelden</a>
+  </div>
+</aside>

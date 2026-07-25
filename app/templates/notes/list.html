@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Notizen · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Notizen</h1><span class="sub">Intern zwischen Geschäftsführung und Büro</span></div>
+
+<div class="card" style="margin-bottom:16px">
+  <form method="post" action="/notizen">
+    <textarea name="text" placeholder="Kurze Notiz für die Kollegen…" required style="min-height:70px"></textarea>
+    <div style="height:8px"></div>
+    <button class="btn" type="submit">Notiz speichern</button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="rowlist">
+    {% for n in notizen %}
+    <div class="row">
+      <div class="grow">
+        <div class="t">{{ n.text }}</div>
+        <div class="s">{{ n.ersteller.name }} · {{ n.created_at|datumzeit }}</div>
+      </div>
+    </div>
+    {% else %}<div class="empty">Noch keine Notizen.</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

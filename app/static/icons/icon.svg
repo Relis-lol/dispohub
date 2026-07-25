@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1c4a80"/>
+  <g fill="#ffffff">
+    <path d="M96 300 h200 v-70 h70 l50 60 v80 h-40 a30 30 0 0 0 -60 0 h-100 a30 30 0 0 0 -60 0 h-10 z"/>
+    <circle cx="176" cy="380" r="26" fill="#cfe0f3"/>
+    <circle cx="336" cy="380" r="26" fill="#cfe0f3"/>
+  </g>
+  <text x="256" y="180" font-family="system-ui,sans-serif" font-size="90" font-weight="700"
+        text-anchor="middle" fill="#cfe0f3">DH</text>
+</svg>

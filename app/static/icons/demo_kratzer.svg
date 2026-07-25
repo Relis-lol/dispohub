@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#c8ccd1"/>
+  <rect width="400" height="300" fill="#dfe2e6"/>
+  <!-- Bodenlinie / Untergrund -->
+  <rect x="0" y="230" width="400" height="70" fill="#b7bcc3"/>
+  <!-- Fahrzeug-Seitenansicht (Transporter) -->
+  <rect x="60" y="120" width="260" height="100" rx="10" fill="#e7e9ec" stroke="#9aa1ab" stroke-width="3"/>
+  <rect x="80" y="90" width="120" height="50" rx="8" fill="#e7e9ec" stroke="#9aa1ab" stroke-width="3"/>
+  <rect x="95" y="100" width="45" height="28" rx="4" fill="#b9d4ef"/>
+  <circle cx="130" cy="222" r="24" fill="#3a3f46"/>
+  <circle cx="130" cy="222" r="9" fill="#8b9099"/>
+  <circle cx="280" cy="222" r="24" fill="#3a3f46"/>
+  <circle cx="280" cy="222" r="9" fill="#8b9099"/>
+  <!-- Kratzer: rote Zick-Zack-Linie auf der Tür -->
+  <polyline points="150,150 175,162 165,170 195,180 185,190 210,198"
+            fill="none" stroke="#c0392b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Foto-Ecken-Look -->
+  <rect x="0" y="0" width="400" height="300" fill="none" stroke="#ffffff" stroke-width="10"/>
+</svg>

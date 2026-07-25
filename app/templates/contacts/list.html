@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ tr('nav.contacts') }} · DispoHub</title>
+  <script src="/static/js/theme.js"></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+  <meta name="theme-color" content="#1c4a80">
+</head>
+<body class="has-tabbar">
+  {% include "partials/mobile_topbar.html" %}
+  <div class="mobile-main">
+    <h2 style="margin:6px 0 12px">{{ tr('contacts.title') }}</h2>
+    <div class="card">
+      <div class="rowlist">
+        {% for k in ansprechpartner %}
+        <div class="row">
+          <span class="dot tone-{{ 'ok' if k.ist_erreichbar else 'bad' }}"
+                title="{{ tr('contacts.reachable') if k.ist_erreichbar else tr('contacts.not_reachable') }}"></span>
+          <div class="grow">
+            <div class="t">{{ k.name }}</div>
+            <div class="s">{{ k.role_label }}</div>
+          </div>
+          {% if k.ist_erreichbar %}
+          <a href="tel:{{ k.phone|replace(' ', '') }}" class="btn ok sm">{{ tr('contacts.call') }}</a>
+          {% else %}
+          <a href="tel:{{ k.phone|replace(' ', '') }}" class="btn ghost sm"
+             onclick="return confirm('{{ tr('contacts.confirm_red_call', name=k.name) }}')">{{ tr('contacts.call') }}</a>
+          {% endif %}
+        </div>
+        {% else %}<div class="empty">{{ tr('contacts.empty') }}</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  {% include "partials/mobile_nav.html" %}
+</body>
+</html>

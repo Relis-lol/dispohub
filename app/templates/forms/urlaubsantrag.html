@@ -1,0 +1,31 @@
+{% extends "forms/_base.html" %}
+{% block title %}Urlaubsantrag{% endblock %}
+{% block kopf %}Urlaubsantrag{% endblock %}
+{% block untertitel %}Schriftliche Fassung — kann auch digital über DispoHub gestellt werden{% endblock %}
+{% block inhalt %}
+<div class="feldzeile">Name, Vorname: <span class="feld">{{ m.name if m else '' }}</span></div>
+<div class="feldzeile">Personal-Nr. / Abteilung: <span class="feld"></span></div>
+<div class="feldzeile" style="margin-top:22px">
+  Hiermit beantrage ich Erholungsurlaub<br><br>
+  vom <span class="feld" style="min-width:130px"></span>
+  &nbsp;bis einschließlich <span class="feld" style="min-width:130px"></span>
+  &nbsp;(<span class="feld" style="min-width:50px"></span> Arbeitstage)
+</div>
+<div class="feldzeile" style="margin-top:14px">
+  Vertretung (falls erforderlich): <span class="feld"></span>
+</div>
+<div class="feldzeile">Bemerkung: <span class="feld" style="min-width:420px"></span></div>
+
+<table style="margin-top:26px">
+  <thead><tr><th colspan="2">Vom Arbeitgeber auszufüllen</th></tr></thead>
+  <tbody>
+    <tr><td style="width:50%">Resturlaub laut Urlaubskonto</td><td class="blank"></td></tr>
+    <tr><td>☐ Genehmigt &nbsp;&nbsp; ☐ Abgelehnt</td><td class="blank"></td></tr>
+    <tr><td>Grund bei Ablehnung</td><td class="blank"></td></tr>
+  </tbody>
+</table>
+<div class="unterschriften">
+  <div>Datum, Unterschrift Mitarbeiter</div>
+  <div>Datum, Unterschrift Arbeitgeber</div>
+</div>
+{% endblock %}

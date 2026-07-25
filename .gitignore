@@ -1,0 +1,17 @@
+.env
+*.db
+*.sqlite3
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+.pytest_cache/
+*.egg-info/
+.DS_Store
+# Local editor/agent tooling config — machine-specific, may reference
+# unrelated local projects, never appropriate to publish.
+.claude/
+.vscode/
+*.local.json

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Vordrucke · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Vordrucke</h1>
+  <span class="sub">Druckfertige Formulare — Name/Monat wählen, drucken, fertig</span>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <h2>🕐 Arbeitszeitnachweis</h2>
+    <p class="muted" style="margin-top:0">Monatsliste: Tag, Von/Bis, Pause, Stunden, Unterschrift.</p>
+    <form method="get" action="/vordrucke/arbeitszeit" target="_blank"
+          style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px">
+        <label for="az-ma" style="margin-top:0">Mitarbeiter</label>
+        <select id="az-ma" name="mitarbeiter_id">
+          <option value="">— leer lassen —</option>
+          {% for p in mitarbeiter %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="az-monat" style="margin-top:0">Monat</label>
+        <input id="az-monat" name="monat" type="month" value="{{ monat_default }}">
+      </div>
+      <button class="btn ghost sm" type="submit">Öffnen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>⛽ Tankliste</h2>
+    <p class="muted" style="margin-top:0">Je Fahrzeug: Tag, km, Diesel/AdBlue-Liter, Tankstelle, Unterschrift.</p>
+    <form method="get" action="/vordrucke/tankliste" target="_blank"
+          style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px">
+        <label for="tl-fz" style="margin-top:0">Fahrzeug</label>
+        <select id="tl-fz" name="vehicle_id">
+          <option value="">— leer lassen —</option>
+          {% for v in fahrzeuge %}<option value="{{ v.id }}">{{ v.kennzeichen }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="tl-monat" style="margin-top:0">Monat</label>
+        <input id="tl-monat" name="monat" type="month" value="{{ monat_default }}">
+      </div>
+      <button class="btn ghost sm" type="submit">Öffnen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>🌴 Urlaubsantrag (Papierform)</h2>
+    <p class="muted" style="margin-top:0">Klassischer Antrag zum Ausfüllen und Unterschreiben.</p>
+    <form method="get" action="/vordrucke/urlaubsantrag" target="_blank"
+          style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px">
+        <label for="ua-ma" style="margin-top:0">Mitarbeiter</label>
+        <select id="ua-ma" name="mitarbeiter_id">
+          <option value="">— leer lassen —</option>
+          {% for p in mitarbeiter %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <button class="btn ghost sm" type="submit">Öffnen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>✅ Urlaubsbestätigung</h2>
+    <p class="muted" style="margin-top:0">Bestätigt nach dem Urlaub, dass der Mitarbeiter von–bis nicht
+      im Betrieb tätig war. Wird aus einem genehmigten Antrag erzeugt.</p>
+    <div class="rowlist">
+      {% for a in genehmigte %}
+      <div class="row">
+        <div class="grow">
+          <div class="t">{{ a.user.name }}</div>
+          <div class="s">{{ a.von|datum }} – {{ a.bis|datum }} ({{ a.tage }} Tage)</div>
+        </div>
+        <a class="btn ghost sm" href="/vordrucke/urlaubsbestaetigung/{{ a.id }}" target="_blank">Öffnen</a>
+      </div>
+      {% else %}<div class="empty">Noch keine genehmigten Urlaubsanträge.</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

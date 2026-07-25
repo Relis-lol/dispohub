@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Schäden · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Schäden & Reparaturen</h1><span class="sub">{{ schaeden|length }} offene Vorgänge</span>
+  <div class="spacer"></div>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
+</div>
+<div class="card">
+  <div class="rowlist">
+    {% for d in schaeden %}
+    <div class="row">
+      <span class="dot tone-{{ d.priority_tone }}"></span>
+      <div class="grow">
+        <div class="t"><a href="/schaeden/{{ d.id }}">{{ d.vehicle.kennzeichen }} — {{ d.beschreibung|truncate(50) }}</a></div>
+        <div class="s">Gemeldet von {{ d.reporter.name if d.reporter else 'unbekannt' }} · {{ d.created_at.strftime('%d.%m.%Y %H:%M') }}
+          {% if d.documents %} · 📷 {{ d.documents|length }}{% endif %}</div>
+      </div>
+      <span class="badge tone-{{ d.priority_tone }}">{{ d.priority_label }}</span>
+      <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ d.status_label }}</span>
+    </div>
+    {% else %}<div class="empty">Keine offenen Schäden.</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

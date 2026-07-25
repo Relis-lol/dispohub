@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Kalender · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Kalender</h1><span class="sub">{{ termine|length }} offene Termine</span>
+  <div class="spacer"></div>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <a href="/kalender?monat={{ vormonat }}" class="btn ghost sm no-print">←</a>
+    <h2 style="margin:0">{{ monat_label }}</h2>
+    <a href="/kalender?monat={{ naechster }}" class="btn ghost sm no-print">→</a>
+    <div class="spacer"></div>
+    <span class="s no-print">
+      <span class="dot tone-warn" style="display:inline-block"></span> Termin&nbsp;&nbsp;
+      <span class="calgrid-legende urlaub">U</span> Urlaub&nbsp;&nbsp;
+      <span class="calgrid-legende krank">K</span> Krank
+    </span>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="calgrid">
+      <thead>
+        <tr>
+          <th class="fix"></th>
+          {% for tag in tage %}
+          <th class="{{ 'we' if tag.weekday() >= 5 }} {{ 'heute' if tag == heute }}">
+            <span class="wd">{{ ['Mo','Di','Mi','Do','Fr','Sa','So'][tag.weekday()] }}</span>{{ tag.day }}
+          </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in fahrzeuge %}
+        <tr>
+          <th class="fix"><a href="/fahrzeuge/{{ v.id }}">{{ v.kennzeichen }}</a></th>
+          {% for tag in tage %}
+          {% set zelle = fz_zellen[v.id].get(tag.day) %}
+          <td class="{{ 'we' if tag.weekday() >= 5 }} {{ 'heute' if tag == heute }}">
+            {% if zelle %}
+            <span class="calgrid-punkt tone-{{ ampel_tone(tag) }}"
+                  title="{% for t in zelle %}{{ t.titel }}{{ ' · ' if not loop.last }}{% endfor %}"></span>
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+        {% if allgemein %}
+        <tr>
+          <th class="fix muted">Allgemein</th>
+          {% for tag in tage %}
+          {% set zelle = allgemein.get(tag.day) %}
+          <td class="{{ 'we' if tag.weekday() >= 5 }} {{ 'heute' if tag == heute }}">
+            {% if zelle %}
+            <span class="calgrid-punkt tone-{{ ampel_tone(tag) }}"
+                  title="{% for t in zelle %}{{ t.titel }}{{ ' · ' if not loop.last }}{% endfor %}"></span>
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endif %}
+        <tr class="calgrid-trenner"><th class="fix">Fahrer</th><td colspan="{{ tage|length }}"></td></tr>
+        {% for f in fahrer %}
+        <tr>
+          <th class="fix"><a href="/mitarbeiter/{{ f.id }}">{{ f.name }}</a></th>
+          {% for tag in tage %}
+          {% set art = fahrer_zellen[f.id].get(tag.day) %}
+          <td class="{{ 'we' if tag.weekday() >= 5 }} {{ 'heute' if tag == heute }} {{ 'cal-urlaub' if art == 'urlaub' }} {{ 'cal-krank' if art == 'krank' }}">
+            {%- if art == 'urlaub' %}U{% elif art == 'krank' %}K{% endif -%}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <h2>➕ Termin eintragen</h2>
+  <form method="post" action="/kalender/termin" class="no-print"
+        style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+    <div style="flex:2;min-width:180px">
+      <label for="nt-titel" style="margin-top:0">Was steht an?</label>
+      <input id="nt-titel" name="titel" required placeholder="z.B. Reifenwechsel, Werkstatt, Zulassung…">
+    </div>
+    <div>
+      <label for="nt-datum" style="margin-top:0">Datum</label>
+      <input id="nt-datum" name="faellig_am" type="date" required value="{{ today().isoformat() }}">
+    </div>
+    <div style="min-width:140px">
+      <label for="nt-fahrzeug" style="margin-top:0">Fahrzeug (optional)</label>
+      <select id="nt-fahrzeug" name="vehicle_id">
+        <option value="">— Allgemein —</option>
+        {% for v in fahrzeuge %}<option value="{{ v.id }}">{{ v.kennzeichen }}</option>{% endfor %}
+      </select>
+    </div>
+    <div style="min-width:120px">
+      <label for="nt-quelle" style="margin-top:0">Art</label>
+      <select id="nt-quelle" name="quelle">
+        {% for wert, label in quellen %}
+        <option value="{{ wert }}" {{ 'selected' if wert == 'allgemein' }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button class="btn" type="submit">Eintragen</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Alle offenen Termine</h2>
+  <div class="rowlist">
+    {% for t in termine %}
+    <div class="row">
+      <span class="dot tone-{{ ampel_tone(t.faellig_am) }}"></span>
+      <div class="grow">
+        <div class="t">{{ t.titel }}</div>
+        <div class="s">{{ t.quelle_label }}{% if t.vehicle %} · {{ t.vehicle.kennzeichen }}{% endif %}</div>
+      </div>
+      <span class="badge tone-{{ ampel_tone(t.faellig_am) }}">
+        {% set n = tage_bis(t.faellig_am) %}
+        {% if n < 0 %}überfällig{% elif n == 0 %}heute{% else %}in {{ n }} Tagen{% endif %}
+        · {{ t.faellig_am|datum }}
+      </span>
+      <form method="post" action="/kalender/termin/{{ t.id }}/erledigt" class="no-print"
+            onsubmit="return confirm('„{{ t.titel }}“ als erledigt abhaken?')">
+        <input type="hidden" name="monat" value="{{ monat_param }}">
+        <button class="btn ghost sm" type="submit" title="Als erledigt markieren">✓</button>
+      </form>
+    </div>
+    {% else %}<div class="empty">Keine offenen Termine.</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

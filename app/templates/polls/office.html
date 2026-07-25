@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Umfragen · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Umfragen</h1>
+  <span class="sub">Kurze Ja/Nein-Fragen an alle Fahrer</span>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <h2>➕ Neue Umfrage</h2>
+  <form method="post" action="/umfragen" style="display:flex;gap:8px;align-items:end">
+    <div style="flex:1">
+      <label for="frage" style="margin-top:0">Frage (Antwort: Ja/Nein)</label>
+      <input id="frage" name="frage" required placeholder='z.B. "Samstag Sonderschicht — wer kann?"'>
+    </div>
+    <button class="btn" type="submit">Fragen</button>
+  </form>
+  <p class="muted" style="margin:8px 0 0;font-size:13px">Fahrer sehen die Frage in ihrem
+    Aufgaben-Tab und antworten mit einem Klick — kein Zwang, keine Pop-ups.</p>
+</div>
+
+{% for u in umfragen %}
+<div class="card" style="margin-bottom:12px">
+  <h2>{{ u.frage }}
+    <span class="count">
+      {% if u.offen %}<span class="badge tone-info">läuft</span>
+      {% else %}<span class="badge tone-muted">geschlossen</span>{% endif %}
+    </span>
+  </h2>
+  <div class="s" style="margin-bottom:8px">
+    von {{ u.erstellt_von.name }} · {{ u.created_at|datumzeit }} ·
+    {{ u.antworten|length }} von {{ anzahl_fahrer }} Fahrern haben geantwortet
+  </div>
+  <div class="rowlist">
+    <div class="row">
+      <span class="badge tone-ok">Ja · {{ u.ja_stimmen|length }}</span>
+      <span class="grow s">{% for a in u.ja_stimmen %}{{ a.user.name }}{{ ', ' if not loop.last }}{% endfor %}</span>
+    </div>
+    <div class="row">
+      <span class="badge tone-bad">Nein · {{ u.nein_stimmen|length }}</span>
+      <span class="grow s">{% for a in u.nein_stimmen %}{{ a.user.name }}{{ ', ' if not loop.last }}{% endfor %}</span>
+    </div>
+  </div>
+  {% if u.offen %}
+  <form method="post" action="/umfragen/{{ u.id }}/schliessen" class="no-print" style="margin-top:8px">
+    <button class="btn ghost sm" type="submit">Umfrage schließen</button>
+  </form>
+  {% endif %}
+</div>
+{% else %}
+<div class="card"><div class="empty">Noch keine Umfragen.</div></div>
+{% endfor %}
+{% endblock %}

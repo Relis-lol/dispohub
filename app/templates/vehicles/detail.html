@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}{{ v.kennzeichen }} · DispoHub{% endblock %}
+{% block head_extra %}
+{% if letzter_standort %}
+<link rel="stylesheet" href="/static/css/leaflet.css">
+<script src="/static/js/leaflet.js"></script>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ v.kennzeichen }}</h1>
+  <span class="badge tone-{{ v.status_tone }}">{{ v.status_label }}</span>
+  <span class="badge tone-info">{{ v.typ_label }}</span>
+  <div class="spacer"></div>
+  <button type="button" class="btn no-print" onclick="window.print()">🖨️ Als PDF drucken</button>
+  <a href="/fahrzeuge/{{ v.id }}/draufsicht" class="btn ghost sm no-print">🎯 Schaden-Draufsicht</a>
+  <a href="/fahrzeuge" class="btn ghost sm no-print">← Übersicht</a>
+</div>
+
+{% set offene_maengel = v.damages|selectattr('status.value', 'ne', 'erledigt')|list %}
+<div class="grid cols-3 quickview" style="margin-bottom:16px">
+  <div class="card stat big">
+    <span class="lbl">TÜV/AU</span>
+    <span class="num badge tone-{{ ampel_tone(v.hu_faellig) }}" style="font-size:18px">{{ v.hu_faellig|datum }}</span>
+  </div>
+  <div class="card stat big">
+    <span class="lbl">Kilometerstand</span>
+    <span class="num" style="font-size:22px">{{ '{:,.0f}'.format(v.km_stand).replace(',', '.') }} km</span>
+  </div>
+  <div class="card stat big">
+    <span class="lbl">Offene Mängel</span>
+    <span class="num" style="color:{{ 'var(--bad-fg)' if offene_maengel else 'var(--ok-fg)' }}">{{ offene_maengel|length }}</span>
+  </div>
+</div>
+
+{% if letzter_standort %}
+{% set ls = letzter_standort %}
+<div class="card" style="margin-bottom:16px">
+  <h2>📍 Zuletzt gesehen</h2>
+  <div class="parkplatz-wrap">
+    <div id="parkplatz-map" class="parkplatz-map"></div>
+    <div class="parkplatz-info">
+      <div class="rowlist">
+        <div class="row"><span class="grow s">Gemeldet von</span><span class="t">{{ ls.reporter.name }}</span></div>
+        <div class="row"><span class="grow s">Zeitpunkt</span><span class="t">{{ ls.created_at|datumzeit }}</span></div>
+        {% if ls.notiz %}<div class="row"><span class="grow s">Notiz</span><span class="t">{{ ls.notiz }}</span></div>{% endif %}
+      </div>
+      {% if ls.foto %}
+      <a href="{{ ls.foto.pfad }}" target="_blank"><img src="{{ ls.foto.pfad }}" class="parkplatz-foto" alt="Parkfoto"></a>
+      {% endif %}
+      <a href="{{ ls.google_maps_url }}" target="_blank" class="btn ghost sm no-print" style="margin-top:8px;display:inline-block">📍 In Google Maps öffnen</a>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var el = document.getElementById("parkplatz-map");
+    if (!el || typeof L === "undefined") return;
+    var map = L.map(el, { zoomControl: false, attributionControl: true }).setView([{{ ls.lat }}, {{ ls.lng }}], 15);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: "© OpenStreetMap Mitwirkende"
+    }).addTo(map);
+    L.circleMarker([{{ ls.lat }}, {{ ls.lng }}], {
+      radius: 10, color: "#fff", weight: 3, fillColor: "#b1372f", fillOpacity: 1
+    }).addTo(map);
+  });
+</script>
+{% endif %}
+
+<div class="card" style="margin-bottom:16px">
+  <h2>📷 Fotos</h2>
+  <div class="photos">
+    {% for f in fotos %}<a href="{{ f.pfad }}" target="_blank"><img src="{{ f.pfad }}" alt="Fahrzeugfoto"></a>{% endfor %}
+  </div>
+  {% if not fotos %}<p class="empty" style="margin:0 0 10px">Noch kein Foto hinterlegt.</p>{% endif %}
+  <form method="post" action="/fahrzeuge/{{ v.id }}/foto" enctype="multipart/form-data"
+        class="no-print" style="display:flex;gap:8px;align-items:center;margin-top:8px">
+    <input type="file" name="foto" accept="image/*" required>
+    <button class="btn ghost sm" type="submit">Foto hochladen</button>
+  </form>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <h2>Stammdaten</h2>
+    <div class="rowlist">
+      <div class="row"><span class="grow s">Hersteller / Modell</span><span class="t">{{ v.hersteller }} {{ v.modell }}</span></div>
+      {% if v.untertyp %}<div class="row"><span class="grow s">Typ</span><span class="t">{{ v.untertyp }}</span></div>{% endif %}
+      <div class="row"><span class="grow s">FIN</span><span class="t">{{ v.fin or '—' }}</span></div>
+      <div class="row"><span class="grow s">Erstzulassung</span><span class="t">{{ v.erstzulassung|datum }}</span></div>
+      <div class="row"><span class="grow s">Kilometerstand</span><span class="t">{{ '{:,.0f}'.format(v.km_stand).replace(',', '.') }} km</span></div>
+      {% if v.zugfahrzeug %}
+      <div class="row"><span class="grow s">Zugfahrzeug</span>
+        <a class="t" href="/fahrzeuge/{{ v.zugfahrzeug.id }}">{{ v.zugfahrzeug.kennzeichen }}</a></div>
+      {% endif %}
+      {% if haenger %}
+      <div class="row"><span class="grow s">Zieht Hänger</span>
+        <span class="t">{% for h in haenger %}<a href="/fahrzeuge/{{ h.id }}">{{ h.kennzeichen }}</a>{{ ', ' if not loop.last }}{% endfor %}</span></div>
+      {% endif %}
+    </div>
+
+    <details class="kulli-details no-print">
+      <summary>✏️ Fahrzeugdaten bearbeiten</summary>
+      <form method="post" action="/fahrzeuge/{{ v.id }}/stammdaten">
+        <label for="fe-kennzeichen">Kennzeichen</label>
+        <input id="fe-kennzeichen" name="kennzeichen" required value="{{ v.kennzeichen }}">
+        <label for="fe-hersteller">Hersteller</label>
+        <input id="fe-hersteller" name="hersteller" value="{{ v.hersteller }}">
+        <label for="fe-modell">Modell</label>
+        <input id="fe-modell" name="modell" value="{{ v.modell }}">
+        <label for="fe-km">Kilometerstand</label>
+        <input id="fe-km" name="km_stand" type="number" min="0" value="{{ v.km_stand }}">
+        <label for="fe-status">Status</label>
+        <select id="fe-status" name="status">
+          {% for wert, label in status_optionen %}
+          <option value="{{ wert }}" {{ 'selected' if v.status.value == wert }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <div class="grid cols-2" style="gap:8px">
+          <div><label for="fe-hu">HU/AU fällig</label>
+            <input id="fe-hu" name="hu_faellig" type="date" value="{{ v.hu_faellig.isoformat() if v.hu_faellig }}"></div>
+          <div><label for="fe-sp">Sicherheitsprüfung</label>
+            <input id="fe-sp" name="sp_faellig" type="date" value="{{ v.sp_faellig.isoformat() if v.sp_faellig }}"></div>
+          <div><label for="fe-uvv">UVV</label>
+            <input id="fe-uvv" name="uvv_faellig" type="date" value="{{ v.uvv_faellig.isoformat() if v.uvv_faellig }}"></div>
+          <div><label for="fe-tacho">Tachoprüfung</label>
+            <input id="fe-tacho" name="tacho_faellig" type="date" value="{{ v.tacho_faellig.isoformat() if v.tacho_faellig }}"></div>
+        </div>
+        <label for="fe-leasing">Leasing-Anbieter</label>
+        <input id="fe-leasing" name="leasing_anbieter" value="{{ v.leasing_anbieter or '' }}">
+        <div class="grid cols-2" style="gap:8px">
+          <div><label for="fe-leasing-ende">Leasing-Ende</label>
+            <input id="fe-leasing-ende" name="leasing_ende" type="date" value="{{ v.leasing_ende.isoformat() if v.leasing_ende }}"></div>
+          <div><label for="fe-fix">Monatl. Fixkosten (€)</label>
+            <input id="fe-fix" name="monatliche_fixkosten" inputmode="decimal"
+                   value="{{ v.monatliche_fixkosten if v.monatliche_fixkosten is not none }}"></div>
+        </div>
+        <div style="height:10px"></div>
+        <button class="btn ghost sm" type="submit">Änderungen speichern</button>
+      </form>
+    </details>
+
+    <h2 style="margin-top:18px">Fahrer-Zuordnung</h2>
+    <div class="rowlist">
+      <div class="row"><span class="grow s">Aktueller Fahrer</span><span class="t">{{ v.driver.name if v.driver else '— nicht zugeordnet —' }}</span></div>
+    </div>
+    <form method="post" action="/fahrzeuge/{{ v.id }}/fahrer" class="no-print" style="margin-top:8px">
+      <label for="fahrer_id">Fahrer ändern (Springer/Schichtwechsel)</label>
+      <select id="fahrer_id" name="fahrer_id">
+        <option value="">— nicht zugeordnet —</option>
+        {% for f in fahrer %}
+        <option value="{{ f.id }}" {{ 'selected' if v.driver and v.driver.id == f.id }}>{{ f.name }}</option>
+        {% endfor %}
+      </select>
+      <div style="height:8px"></div>
+      <button class="btn ghost sm" type="submit">Zuordnung speichern</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Vertrag & Kosten</h2>
+    <div class="rowlist">
+      <div class="row"><span class="grow s">Leasing</span><span class="t">{{ v.leasing_anbieter or '—' }}</span></div>
+      <div class="row"><span class="grow s">Leasing-Ende</span>
+        <span class="badge tone-{{ ampel_tone(v.leasing_ende, 60) }}">{{ v.leasing_ende|datum }}</span></div>
+      <div class="row"><span class="grow s">Monatl. Fixkosten</span><span class="t">{{ v.monatliche_fixkosten|euro }}</span></div>
+      <div class="row"><span class="grow s">Kosten diesen Monat</span><span class="t">{{ kosten_monat|euro }}</span></div>
+      <div class="row"><span class="grow s">Kosten gesamt</span><span class="t">{{ kosten_gesamt|euro }}</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Prüftermine</h2>
+    <div class="rowlist">
+      {% for label, d in [('HU/AU', v.hu_faellig), ('Sicherheitsprüfung', v.sp_faellig), ('UVV', v.uvv_faellig), ('Tachoprüfung', v.tacho_faellig)] %}
+      <div class="row"><span class="grow s">{{ label }}</span>
+        <span class="badge tone-{{ ampel_tone(d) }}">{{ d|datum }}</span></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ Schäden <span class="count">{{ v.damages|length }}</span></h2>
+    <div class="rowlist">
+      {% for d in v.damages %}
+      <div class="row">
+        <span class="dot tone-{{ d.priority_tone }}"></span>
+        <div class="grow"><div class="t"><a href="/schaeden/{{ d.id }}">{{ d.beschreibung|truncate(40) }}</a></div>
+          <div class="s">{{ d.created_at.strftime('%d.%m.%Y') }}</div></div>
+        <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ d.status_label }}</span>
+      </div>
+      {% else %}<div class="empty">Keine Schäden erfasst.</div>{% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧯 ADR-/Sicherheitsmittel <span class="count">{{ adr_items|length }}</span></h2>
+    <div class="rowlist">
+      {% for a in adr_items %}
+      <div class="row">
+        <span class="grow t">{{ a.bezeichnung }}</span>
+        <span class="badge tone-{{ ampel_tone(a.ablauf_am) }}">{{ a.ablauf_am|datum }}</span>
+      </div>
+      {% else %}<div class="empty">Keine ADR-Mittel erfasst.</div>{% endfor %}
+    </div>
+    <form method="post" action="/fahrzeuge/{{ v.id }}/adr" class="no-print"
+          style="margin-top:10px;display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <div style="flex:1;min-width:140px">
+        <label for="bezeichnung" style="margin-top:0">Bezeichnung</label>
+        <input id="bezeichnung" name="bezeichnung" placeholder="z.B. Feuerlöscher" required>
+      </div>
+      <div>
+        <label for="ablauf_am" style="margin-top:0">Ablauf</label>
+        <input id="ablauf_am" name="ablauf_am" type="date">
+      </div>
+      <button class="btn ghost sm" type="submit">Hinzufügen</button>
+    </form>
+    {% if adr_items %}
+    <form method="post" action="/fahrzeuge/{{ v.id }}/adr-checkliste" class="no-print" style="margin-top:10px">
+      <button class="btn ghost sm" type="submit">📋 Checkliste an Fahrer senden</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ tr('password_page.title') }} · DispoHub</title>
+  <script src="/static/js/theme.js"></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="card login-card">
+      <div class="brand">Fleet<span>Hub</span></div>
+      {% include "partials/lang_switcher.html" %}
+      {% if pflicht %}
+      <div class="error" style="background:var(--info-bg);color:var(--info-fg)">
+        {{ tr('password_page.mandatory') }}
+      </div>
+      {% endif %}
+      {% if error_key %}<div class="error">{{ tr(error_key) }}</div>{% endif %}
+      <form method="post" action="/passwort">
+        <label for="altes_passwort">{{ tr('password_page.current') }}</label>
+        <input id="altes_passwort" name="altes_passwort" type="password"
+               autocomplete="current-password" required autofocus>
+        <label for="neues_passwort">{{ tr('password_page.new') }}</label>
+        <input id="neues_passwort" name="neues_passwort" type="password"
+               autocomplete="new-password" minlength="6" required>
+        <label for="neues_passwort_wiederholen">{{ tr('password_page.confirm') }}</label>
+        <input id="neues_passwort_wiederholen" name="neues_passwort_wiederholen" type="password"
+               autocomplete="new-password" minlength="6" required>
+        <div style="height:14px"></div>
+        <button class="btn block" type="submit">{{ tr('password_page.submit') }}</button>
+      </form>
+      {% if not pflicht %}
+      <div class="demo-accounts" style="text-align:center">
+        <a href="/">{{ tr('password_page.back') }}</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

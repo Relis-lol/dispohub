@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Verwaltung · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Verwaltung</h1>
+  <span class="sub">Mitarbeiter & Fahrzeuge anlegen und entfernen</span>
+  <div class="spacer"></div>
+  {% if backup_verfuegbar %}
+  <a href="/verwaltung/backup" class="btn ghost sm no-print">⬇ Backup herunterladen</a>
+  {% endif %}
+  <a href="/einstellungen/rechte" class="btn ghost sm no-print">⚙️ Rechte</a>
+</div>
+{% if backup_verfuegbar %}
+<p class="muted no-print" style="margin:-8px 0 14px;font-size:13px">
+  Lädt eine vollständige Kopie der Datenbank herunter (z. B. auf den privaten PC der GF).
+  Regelmäßig sichern, bis eine automatische Backup-Lösung eingerichtet ist.
+</p>
+{% endif %}
+
+<div class="grid cols-2">
+  <div class="card">
+    <h2>➕ Neuer Mitarbeiter</h2>
+    <form method="post" action="/verwaltung/mitarbeiter">
+      <label for="ma-name">Name</label>
+      <input id="ma-name" name="name" required placeholder="Vor- und Nachname">
+      <label for="ma-email">E-Mail (für die Anmeldung)</label>
+      <input id="ma-email" name="email" type="email" required placeholder="name@firma.de">
+      <label for="ma-rolle">Rolle</label>
+      <select id="ma-rolle" name="rolle">
+        {% for wert, label in rollen %}
+        <option value="{{ wert }}" {{ 'selected' if wert == 'fahrer' }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <label for="ma-telefon">Telefon (optional)</label>
+      <input id="ma-telefon" name="telefon" placeholder="+49 …">
+      <p class="muted" style="font-size:13px">
+        Ein zufälliges Start-Passwort wird automatisch erzeugt und nach dem
+        Anlegen einmalig angezeigt.
+      </p>
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Mitarbeiter anlegen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>➕ Neues Fahrzeug</h2>
+    <form method="post" action="/verwaltung/fahrzeug">
+      <label for="fz-kennzeichen">Kennzeichen</label>
+      <input id="fz-kennzeichen" name="kennzeichen" required placeholder="B-TR 1234">
+      <label for="fz-typ">Typ</label>
+      <select id="fz-typ" name="typ">
+        {% for wert, label in typen %}
+        <option value="{{ wert }}" {{ 'selected' if wert == 'sprinter' }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <label for="fz-hersteller">Hersteller</label>
+      <input id="fz-hersteller" name="hersteller" placeholder="z.B. Mercedes-Benz">
+      <label for="fz-modell">Modell</label>
+      <input id="fz-modell" name="modell" placeholder="z.B. Sprinter 317">
+      <label for="fz-km">Kilometerstand</label>
+      <input id="fz-km" name="km_stand" type="number" min="0" value="0">
+      <label for="fz-hu">HU/AU fällig (optional)</label>
+      <input id="fz-hu" name="hu_faellig" type="date">
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Fahrzeug anlegen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>👥 Mitarbeiter <span class="count">{{ mitarbeiter|length }}</span></h2>
+    <div class="rowlist">
+      {% for m in mitarbeiter %}
+      <div class="row">
+        <div class="grow">
+          <div class="t"><a href="/mitarbeiter/{{ m.id }}">{{ m.name }}</a></div>
+          <div class="s">{{ m.role_label }} · {{ m.email }}</div>
+        </div>
+        {% if m.id != user.id %}
+        <form method="post" action="/verwaltung/mitarbeiter/{{ m.id }}/loeschen" class="no-print"
+              onsubmit="return confirm('{{ m.name }} in den Papierkorb verschieben? Wiederherstellen ist {{ aufbewahrung }} Tage lang möglich.')">
+          <button class="btn ghost sm" type="submit">🗑️</button>
+        </form>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚐 Fahrzeuge <span class="count">{{ fahrzeuge|length }}</span></h2>
+    <div class="rowlist">
+      {% for v in fahrzeuge %}
+      <div class="row">
+        <div class="grow">
+          <div class="t"><a href="/fahrzeuge/{{ v.id }}">{{ v.kennzeichen }}</a></div>
+          <div class="s">{{ v.hersteller }} {{ v.modell }} · {{ v.typ_label }}</div>
+        </div>
+        <form method="post" action="/verwaltung/fahrzeug/{{ v.id }}/loeschen" class="no-print"
+              onsubmit="return confirm('{{ v.kennzeichen }} in den Papierkorb verschieben? Wiederherstellen ist {{ aufbewahrung }} Tage lang möglich.')">
+          <button class="btn ghost sm" type="submit">🗑️</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <h2>🎨 Firmenlogo & Website</h2>
+  <p class="muted" style="margin-top:0">Das Logo erscheint oben in der Seitenleiste (statt des DispoHub-Schriftzugs) und
+    verlinkt auf eure Firmen-Website.</p>
+  {% if logo_pfad %}
+  <img src="{{ logo_pfad }}" alt="Aktuelles Logo" style="max-height:56px;max-width:240px;object-fit:contain;display:block;margin-bottom:10px">
+  {% endif %}
+  <form method="post" action="/verwaltung/branding" enctype="multipart/form-data"
+        style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+    <div>
+      <label for="br-logo" style="margin-top:0">{{ 'Neues Logo (Bild)' if logo_pfad else 'Logo (Bild)' }}</label>
+      <input id="br-logo" name="logo" type="file" accept="image/*">
+    </div>
+    <div style="flex:1;min-width:180px">
+      <label for="br-website" style="margin-top:0">Firmen-Website</label>
+      <input id="br-website" name="firmen_website" placeholder="www.eurefirma.de" value="{{ firmen_website or '' }}">
+    </div>
+    <button class="btn ghost sm" type="submit">Speichern</button>
+    {% if logo_pfad %}
+    <button class="btn ghost sm" type="submit" name="logo_entfernen" value="1">Logo entfernen</button>
+    {% endif %}
+  </form>
+</div>
+
+{% if korb_users or korb_vehicles %}
+<div class="card" style="margin-top:16px">
+  <h2>🗑️ Papierkorb <span class="count">{{ korb_users|length + korb_vehicles|length }}</span></h2>
+  <p class="muted" style="margin-top:0">Einträge werden nach {{ aufbewahrung }} Tagen automatisch endgültig gelöscht.</p>
+  <div class="rowlist">
+    {% for m in korb_users %}
+    <div class="row">
+      <span class="badge tone-muted">Mitarbeiter</span>
+      <div class="grow">
+        <div class="t">{{ m.name }}</div>
+        <div class="s">endgültig gelöscht in {{ tage_verbleibend(m.geloescht_am) }} Tagen</div>
+      </div>
+      <form method="post" action="/verwaltung/mitarbeiter/{{ m.id }}/wiederherstellen" class="no-print">
+        <button class="btn ghost sm" type="submit">↩️ Wiederherstellen</button>
+      </form>
+    </div>
+    {% endfor %}
+    {% for v in korb_vehicles %}
+    <div class="row">
+      <span class="badge tone-muted">Fahrzeug</span>
+      <div class="grow">
+        <div class="t">{{ v.kennzeichen }} · {{ v.hersteller }} {{ v.modell }}</div>
+        <div class="s">endgültig gelöscht in {{ tage_verbleibend(v.geloescht_am) }} Tagen</div>
+      </div>
+      <form method="post" action="/verwaltung/fahrzeug/{{ v.id }}/wiederherstellen" class="no-print">
+        <button class="btn ghost sm" type="submit">↩️ Wiederherstellen</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

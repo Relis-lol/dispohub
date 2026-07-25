@@ -1,0 +1,60 @@
+<div id="chat" data-thread-id="{{ t.id }}" data-user-id="{{ user.id }}" data-del-window="{{ loeschen_fenster_sek }}" class="conversation">
+  <div class="chat-head">
+    <span class="ico">{{ '👥' if t.art.value == 'gruppe' else '👤' }}</span>
+    <strong>{{ t.anzeige_name(user) }}</strong>
+    {% if t.art.value == 'gruppe' %}<span class="muted">· {{ t.memberships|length }} Mitglieder</span>{% endif %}
+  </div>
+  {% if t.art.value == 'gruppe' %}
+  <div class="chat-members">
+    {% for m in t.memberships %}
+    <span class="member-chip">{{ m.user.name.split(' ')[0] }}{% if m.user.vehicle %} · {{ m.user.vehicle.kennzeichen }}{% endif %}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div id="messages" class="messages">
+    {% for m in messages %}
+    <div class="bubble {{ 'mine' if m.sender_id == user.id else 'theirs' }} {{ 'is-deleted' if m.geloescht }}"
+         data-mid="{{ m.id }}" data-mine="{{ '1' if m.sender_id == user.id else '0' }}"
+         data-created="{{ (m.created_at.isoformat() + 'Z') if m.created_at else '' }}">
+      {% if m.sender_id != user.id %}<div class="who">{{ m.sender.name.split(' ')[0] }}</div>{% endif %}
+      {% if m.geloescht %}
+        <div class="txt deleted-txt">{{ tr('chat.deleted') }}</div>
+      {% else %}
+        {% if m.document and m.document.typ == 'audio' %}
+        <audio controls preload="metadata" class="baudio" src="{{ m.document.pfad }}"></audio>
+        {% elif m.document %}<a href="{{ m.document.pfad }}" target="_blank"><img src="{{ m.document.pfad }}" class="bimg"></a>{% endif %}
+        {% if m.text %}<div class="txt">{{ m.text }}</div>{% endif %}
+      {% endif %}
+      <div class="time">{{ m.created_at|chatzeit }}</div>
+      {% if not m.geloescht %}
+      <div class="bubble-action">
+        {% if m.document and user.role.value != 'fahrer' and m.sender and m.sender.vehicle_id %}
+        <form method="post" action="/chat/nachricht/{{ m.id }}/als-schaden" style="display:inline">
+          <button class="btn ghost sm" type="submit">{{ tr('chat.take_over_damage') }}</button>
+        </form>
+        {% endif %}
+        {% if m.sender_id == user.id %}
+        <button type="button" class="btn ghost sm del-btn" data-del-id="{{ m.id }}" hidden>{{ tr('chat.delete') }}</button>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% else %}<div class="empty" style="margin:auto">{{ tr('chat.empty_conversation') }}</div>{% endfor %}
+  </div>
+
+  {% if kann_senden %}
+  <form id="chat-form" class="chat-input" method="post" action="/chat/{{ t.id }}/senden" enctype="multipart/form-data"
+        data-notify-voice="{{ tr('chat.notify_voice') }}" data-notify-photo="{{ tr('chat.notify_photo') }}">
+    <input type="file" id="bild-input" name="bild" accept="image/*" hidden>
+    <button type="button" class="attach" id="btn-kamera" title="{{ tr('chat.camera') }}">📷</button>
+    <button type="button" class="attach" id="btn-galerie" title="{{ tr('chat.gallery') }}">🖼️</button>
+    <button type="button" class="attach" id="btn-mikro" title="{{ tr('chat.mic') }}">🎤</button>
+    <input id="chat-text" name="text" placeholder="{{ tr('chat.placeholder') }}" autocomplete="off">
+    <button class="btn" type="submit">{{ tr('chat.send') }}</button>
+  </form>
+  {% else %}
+  <div class="chat-readonly">{{ tr('chat.readonly') }}</div>
+  {% endif %}
+</div>
+<script src="/static/js/chat.js" defer></script>

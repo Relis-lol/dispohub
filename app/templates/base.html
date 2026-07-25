@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}DispoHub{% endblock %}</title>
+  <script src="/static/js/theme.js"></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1c4a80">
+  <script src="/static/js/htmx.min.js" defer></script>
+  <script src="/static/js/app.js" defer></script>
+  <script src="/static/js/notifications.js" defer></script>
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <div class="office-topbar">
+    <button type="button" class="hamburger" id="menu-toggle" aria-label="Menü öffnen">☰</button>
+    <div class="brand">Fleet<span>Hub</span></div>
+  </div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <div class="app">
+    {% include "partials/nav.html" %}
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script>
+    (function () {
+      const btn = document.getElementById("menu-toggle");
+      const sidebar = document.querySelector(".sidebar");
+      const backdrop = document.getElementById("sidebar-backdrop");
+      if (!btn || !sidebar || !backdrop) return;
+      function close() { sidebar.classList.remove("open"); backdrop.classList.remove("show"); }
+      btn.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+        backdrop.classList.toggle("show");
+      });
+      backdrop.addEventListener("click", close);
+      sidebar.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", close); });
+    })();
+  </script>
+  {% block body_extra %}{% endblock %}
+</body>
+</html>

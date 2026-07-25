@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ tr('nav.report') }} · DispoHub</title>
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/notifications.js" defer></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1c4a80">
+</head>
+<body class="has-tabbar">
+  {% include "partials/mobile_topbar.html" %}
+  <div class="mobile-main">
+    {% if ok %}<div class="success">{{ tr('report.success', name=user.name.split(' ')[0]) }}</div>{% endif %}
+    {% if parkplatz_ok %}<div class="success">{{ tr('report.parking_success') }}</div>{% endif %}
+
+    {% if mein_fahrzeug_id %}
+    <div class="card">
+      <h2>{{ tr('report.parking_title') }}</h2>
+      <p class="muted" style="margin-top:0">{{ tr('report.parking_hint') }}</p>
+      <form method="post" action="/parkplatz" enctype="multipart/form-data" id="parkplatz-form"
+            data-t-fetching="{{ tr('report.location_fetching') }}"
+            data-t-captured="{{ tr('report.location_captured') }}"
+            data-t-unsupported="{{ tr('report.location_unsupported') }}"
+            data-t-denied="{{ tr('report.location_denied') }}"
+            data-t-photo-selected="{{ tr('report.photo_selected') }}">
+        <input type="hidden" name="lat" id="pk-lat">
+        <input type="hidden" name="lng" id="pk-lng">
+        <button type="button" class="btn ghost block" id="pk-standort-btn">{{ tr('report.capture_location') }}</button>
+        <p id="pk-status" class="parkplatz-status"></p>
+
+        <div id="pk-fields" style="display:none">
+          <label>{{ tr('report.photo_optional') }}</label>
+          <input id="pk-foto" name="foto" type="file" accept="image/*" hidden>
+          <div class="photo-picker">
+            <button type="button" class="btn ghost sm" id="pk-foto-kamera">{{ tr('report.camera') }}</button>
+            <button type="button" class="btn ghost sm" id="pk-foto-galerie">{{ tr('report.gallery') }}</button>
+            <span id="pk-foto-status" class="muted" style="font-size:13px"></span>
+          </div>
+          <label for="pk-notiz">{{ tr('report.note_optional') }}</label>
+          <input id="pk-notiz" name="notiz" placeholder="{{ tr('report.note_placeholder') }}">
+          <div style="height:10px"></div>
+          <button class="btn block" type="submit">{{ tr('report.submit_parking') }}</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-top:14px">
+      <h2>{{ tr('report.damage_title') }}</h2>
+      <form method="post" action="/melden" enctype="multipart/form-data"
+            data-t-photos-selected="{{ tr('report.photos_selected', n='%d') }}">
+        <label for="vehicle_id">{{ tr('report.vehicle') }}</label>
+        <select id="vehicle_id" name="vehicle_id" required>
+          {% for v in fahrzeuge %}
+          <option value="{{ v.id }}" {{ 'selected' if v.id == mein_fahrzeug_id }}>{{ v.kennzeichen }} — {{ v.hersteller }} {{ v.modell }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="beschreibung">{{ tr('report.description') }}</label>
+        <textarea id="beschreibung" name="beschreibung" placeholder="{{ tr('report.description_placeholder') }}" required></textarea>
+
+        <label for="prioritaet">{{ tr('report.urgency') }}</label>
+        <select id="prioritaet" name="prioritaet">
+          {% for p in priorities %}
+          <option value="{{ p.value }}" {{ 'selected' if p.value == 'normal' }}>{{ priority_labels[p.value] }}</option>
+          {% endfor %}
+        </select>
+
+        <label>{{ tr('report.photos_optional') }}</label>
+        <input id="fotos" name="fotos" type="file" accept="image/*" multiple hidden>
+        <div class="photo-picker">
+          <button type="button" class="btn ghost sm" id="foto-kamera">{{ tr('report.camera') }}</button>
+          <button type="button" class="btn ghost sm" id="foto-galerie">{{ tr('report.gallery') }}</button>
+          <span id="foto-status" class="muted" style="font-size:13px"></span>
+        </div>
+
+        <label for="nachricht">{{ tr('report.message_office') }}</label>
+        <textarea id="nachricht" name="nachricht" placeholder="{{ tr('report.message_placeholder') }}" style="min-height:60px"></textarea>
+
+        <div style="height:14px"></div>
+        <button class="btn block" type="submit">{{ tr('report.submit_damage') }}</button>
+      </form>
+    </div>
+    <script>
+      (function () {
+        const input = document.getElementById("fotos");
+        const status = document.getElementById("foto-status");
+        const btnKamera = document.getElementById("foto-kamera");
+        const btnGalerie = document.getElementById("foto-galerie");
+        const tmpl = document.querySelector('form[action="/melden"]').dataset.tPhotosSelected;
+        let gesammelt = [];
+
+        function updateStatus() {
+          status.textContent = gesammelt.length ? tmpl.replace("%d", gesammelt.length) : "";
+        }
+
+        function openPicker(withCamera) {
+          const temp = document.createElement("input");
+          temp.type = "file";
+          temp.accept = "image/*";
+          if (withCamera) temp.setAttribute("capture", "environment");
+          temp.addEventListener("change", function () {
+            if (temp.files && temp.files[0]) {
+              gesammelt.push(temp.files[0]);
+              const dt = new DataTransfer();
+              gesammelt.forEach(function (f) { dt.items.add(f); });
+              input.files = dt.files;
+              updateStatus();
+            }
+          });
+          temp.click();
+        }
+
+        btnKamera.addEventListener("click", function () { openPicker(true); });
+        btnGalerie.addEventListener("click", function () { openPicker(false); });
+      })();
+    </script>
+
+    {% if mein_fahrzeug_id %}
+    <script>
+      (function () {
+        const form = document.getElementById("parkplatz-form");
+        const btn = document.getElementById("pk-standort-btn");
+        const status = document.getElementById("pk-status");
+        const fields = document.getElementById("pk-fields");
+        const latInput = document.getElementById("pk-lat");
+        const lngInput = document.getElementById("pk-lng");
+        const fotoInput = document.getElementById("pk-foto");
+        const fotoStatus = document.getElementById("pk-foto-status");
+
+        btn.addEventListener("click", function () {
+          if (!("geolocation" in navigator)) {
+            status.textContent = form.dataset.tUnsupported;
+            return;
+          }
+          status.textContent = form.dataset.tFetching;
+          navigator.geolocation.getCurrentPosition(
+            function (pos) {
+              latInput.value = pos.coords.latitude.toFixed(6);
+              lngInput.value = pos.coords.longitude.toFixed(6);
+              status.textContent = form.dataset.tCaptured
+                .replace("{lat}", latInput.value).replace("{lng}", lngInput.value);
+              fields.style.display = "block";
+            },
+            function (err) {
+              status.textContent = form.dataset.tDenied;
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        });
+
+        function openPicker(withCamera) {
+          const temp = document.createElement("input");
+          temp.type = "file";
+          temp.accept = "image/*";
+          if (withCamera) temp.setAttribute("capture", "environment");
+          temp.addEventListener("change", function () {
+            if (temp.files && temp.files[0]) {
+              const dt = new DataTransfer();
+              dt.items.add(temp.files[0]);
+              fotoInput.files = dt.files;
+              fotoStatus.textContent = form.dataset.tPhotoSelected;
+            }
+          });
+          temp.click();
+        }
+        document.getElementById("pk-foto-kamera").addEventListener("click", function () { openPicker(true); });
+        document.getElementById("pk-foto-galerie").addEventListener("click", function () { openPicker(false); });
+      })();
+    </script>
+    {% endif %}
+
+    <div class="card" style="margin-top:14px">
+      <h2>{{ tr('report.vacation_title') }}</h2>
+      {% if urlaub_ok %}<div class="success">{{ tr('report.vacation_success') }}</div>{% endif %}
+      <form method="post" action="/urlaub">
+        <div style="display:flex;gap:10px">
+          <div style="flex:1"><label for="ur-von">{{ tr('report.from') }}</label>
+            <input id="ur-von" name="von" type="date" required min="{{ today().isoformat() }}"></div>
+          <div style="flex:1"><label for="ur-bis">{{ tr('report.to') }}</label>
+            <input id="ur-bis" name="bis" type="date" required min="{{ today().isoformat() }}"></div>
+        </div>
+        <label for="ur-notiz">{{ tr('report.note_optional') }}</label>
+        <input id="ur-notiz" name="notiz" placeholder="{{ tr('report.vacation_note_placeholder') }}">
+        <div style="height:10px"></div>
+        <button class="btn block" type="submit">{{ tr('report.submit_vacation') }}</button>
+      </form>
+      {% if meine_antraege %}
+      <div class="rowlist" style="margin-top:10px">
+        {% for a in meine_antraege %}
+        <div class="row">
+          <div class="grow">
+            <div class="t">{{ a.von|datum }} – {{ a.bis|datum }} ({{ tr('report.days', n=a.tage) }})</div>
+            {% if a.notiz %}<div class="s">{{ a.notiz }}</div>{% endif %}
+          </div>
+          <span class="badge tone-{{ a.status_tone }}">{{ a.status_label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>{{ tr('report.my_reports') }}</h2>
+      <div class="rowlist">
+        {% for d in meine %}
+        <div class="row">
+          <span class="dot tone-{{ d.priority_tone }}"></span>
+          <div class="grow"><div class="t">{{ d.vehicle.kennzeichen }}</div>
+            <div class="s">{{ d.beschreibung|truncate(40) }}</div></div>
+          <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ d.status_label }}</span>
+        </div>
+        {% else %}<div class="empty">{{ tr('report.no_reports') }}</div>{% endfor %}
+      </div>
+    </div>
+
+    {% if am_fahrzeug %}
+    <div class="card" style="margin-top:14px">
+      <h2>{{ tr('report.at_vehicle') }}</h2>
+      <div class="rowlist">
+        {% for d in am_fahrzeug %}
+        <div class="row">
+          <span class="dot tone-{{ d.priority_tone }}"></span>
+          <div class="grow"><div class="t">{{ d.beschreibung|truncate(40) }}</div>
+            <div class="s">{{ tr('report.from_name', name=d.reporter.name.split(' ')[0]) if d.reporter else tr('report.from_unknown') }}</div></div>
+          <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ d.status_label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% include "partials/mobile_nav.html" %}
+</body>
+</html>

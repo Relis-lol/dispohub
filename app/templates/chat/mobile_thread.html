@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t.anzeige_name(user) }} · DispoHub</title>
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/notifications.js" defer></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+  <meta name="theme-color" content="#1c4a80">
+</head>
+<body class="chat-fullscreen">
+  <div class="mobilebar">
+    <a href="/chat" class="back-btn" aria-label="Zurück zur Übersicht">←</a>
+    <div class="brand">{{ t.anzeige_name(user) }}</div>
+    <div class="mobilebar-actions">
+      <button type="button" onclick="fhToggleTheme()" title="{{ tr('nav.theme') }}">
+        <span class="theme-toggle-label">🌙</span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-chat">
+    {% include "chat/_conversation.html" %}
+  </div>
+</body>
+</html>

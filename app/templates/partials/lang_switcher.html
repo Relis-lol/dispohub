@@ -1,0 +1,7 @@
+<div class="lang-switch">
+  {% for code, flagge in flaggen.items() %}
+  <button type="button" class="lang-flag {{ 'active' if code == lang }}"
+          title="{{ sprachen[code] }}" data-lang="{{ code }}"
+          onclick="document.cookie='fh_lang='+this.dataset.lang+';path=/;max-age=31536000;samesite=lax';location.reload();">{{ flagge }}</button>
+  {% endfor %}
+</div>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ tr('nav.tasks') }} · DispoHub</title>
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/notifications.js" defer></script>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+  <meta name="theme-color" content="#1c4a80">
+</head>
+<body class="has-tabbar">
+  {% include "partials/mobile_topbar.html" %}
+  <div class="mobile-main">
+    {% if umfragen %}
+    <div class="card" style="margin-bottom:14px">
+      <h2>{{ tr('tasks.poll_title') }}</h2>
+      <div class="rowlist">
+        {% for p in umfragen %}
+        <div class="row">
+          <div class="grow">
+            <div class="t">{{ p.frage }}</div>
+            <div class="s">{{ tr('tasks.poll_from', name=p.erstellt_von.name.split(' ')[0]) }}</div>
+          </div>
+          <form method="post" action="/umfragen/{{ p.id }}/antwort">
+            <input type="hidden" name="antwort" value="ja">
+            <button class="btn ok sm" type="submit">{{ tr('tasks.poll_yes') }}</button>
+          </form>
+          <form method="post" action="/umfragen/{{ p.id }}/antwort">
+            <input type="hidden" name="antwort" value="nein">
+            <button class="btn ghost sm" type="submit">{{ tr('tasks.poll_no') }}</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <h2 style="margin:6px 0 12px">{{ tr('tasks.my_title') }}</h2>
+    <div class="card">
+      <div class="rowlist">
+        {% for t_ in offen %}
+        <div class="row">
+          <span class="dot tone-{{ ampel_tone(t_.faellig_am) if t_.faellig_am else 'info' }}"></span>
+          <div class="grow">
+            <div class="t">{{ t_.titel }}</div>
+            {% if t_.beschreibung %}<div class="s">{{ t_.beschreibung }}</div>{% endif %}
+            <div class="s">{% if t_.faellig_am %}{{ tr('tasks.due', date=t_.faellig_am|datum) }}{% endif %}{% if t_.vehicle %} · {{ t_.vehicle.kennzeichen }}{% endif %}</div>
+          </div>
+          <form method="post" action="/aufgaben/{{ t_.id }}/erledigt"
+                onsubmit="return confirm('{{ tr('tasks.confirm_done', title=t_.titel) }}')">
+            <button class="btn ok sm" type="submit">✓</button>
+          </form>
+        </div>
+        {% else %}<div class="empty">{{ tr('tasks.empty') }}</div>{% endfor %}
+      </div>
+    </div>
+
+    {% if erledigt %}
+    <div class="card" style="margin-top:14px">
+      <h2>{{ tr('tasks.done_title') }}</h2>
+      <div class="rowlist">
+        {% for t_ in erledigt %}
+        <div class="row"><span class="grow t">{{ t_.titel }}</span>
+          <span class="badge tone-ok">✓</span></div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% include "partials/mobile_nav.html" %}
+</body>
+</html>

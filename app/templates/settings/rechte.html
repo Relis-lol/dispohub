@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Zugriffsrechte · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Zugriffsrechte für „Büro"</h1>
+  <span class="sub">Geschäftsführung und Admin haben immer vollen Zugriff.</span></div>
+
+<div class="card">
+  <p class="muted" style="margin-top:0">
+    Hier legst du fest, welche Bereiche die Rolle „Büroleitung" sehen darf. Deaktivierte
+    Bereiche sind für Büro-Nutzer gesperrt (403), Fahrer sind davon unabhängig immer nur
+    auf Chat und Schaden-Melden beschränkt.
+  </p>
+  <form method="post" action="/einstellungen/rechte">
+    <div class="rowlist">
+      {% for bereich, label, aktiv in bereiche %}
+      <div class="row">
+        <span class="grow t">{{ label }}</span>
+        <label style="display:flex;align-items:center;gap:6px;margin:0">
+          <input type="checkbox" name="bereich_{{ bereich }}" style="width:auto"
+                 {{ 'checked' if aktiv }}>
+          <span class="muted" style="font-size:13px">Büro erlaubt</span>
+        </label>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="height:14px"></div>
+    <button class="btn" type="submit">Speichern</button>
+  </form>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <h2>📞 Anrufbereitschaft für Fahrer</h2>
+  <p class="muted" style="margin-top:0">
+    Fahrer sehen unter „Ansprechpartner" alle Nummern mit einer Ampel:
+    <strong style="color:var(--ok-fg)">Grün</strong> = jetzt anrufen okay,
+    <strong style="color:var(--bad-fg)">Rot</strong> = bitte nicht (der Fahrer bekommt
+    eine „Wirklich anrufen?"-Rückfrage, für Notfälle geht es trotzdem).
+    „Zeitplan" schaltet automatisch nach Uhrzeit — z. B. 07:00–18:00 grün, sonst rot.
+  </p>
+  <div class="rowlist">
+    {% for k in ansprechpartner %}
+    <form method="post" action="/einstellungen/erreichbarkeit" class="row" style="flex-wrap:wrap">
+      <input type="hidden" name="kontakt_id" value="{{ k.id }}">
+      <span class="dot tone-{{ 'ok' if k.ist_erreichbar else 'bad' }}"></span>
+      <div class="grow">
+        <div class="t">{{ k.name }}</div>
+        <div class="s">{{ k.role_label }} · {{ k.phone }}</div>
+      </div>
+      <select name="status" style="width:auto" onchange="this.form.querySelectorAll('.zp').forEach(el => el.style.display = this.value === 'zeitplan' ? '' : 'none')">
+        <option value="gruen" {{ 'selected' if k.erreichbarkeit.value == 'gruen' }}>🟢 Immer grün</option>
+        <option value="rot" {{ 'selected' if k.erreichbarkeit.value == 'rot' }}>🔴 Nicht stören</option>
+        <option value="zeitplan" {{ 'selected' if k.erreichbarkeit.value == 'zeitplan' }}>🕐 Zeitplan</option>
+      </select>
+      <span class="zp" {% if k.erreichbarkeit.value != 'zeitplan' %}style="display:none"{% endif %}>
+        <input type="time" name="von" style="width:auto" value="{{ k.erreichbar_von.strftime('%H:%M') if k.erreichbar_von }}">
+        –
+        <input type="time" name="bis" style="width:auto" value="{{ k.erreichbar_bis.strftime('%H:%M') if k.erreichbar_bis }}">
+      </span>
+      <button class="btn ghost sm" type="submit">Speichern</button>
+    </form>
+    {% else %}<div class="empty">Keine GF/Büro-Kontakte mit Telefonnummer.</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+<nav class="mobile-tabbar">
+  <a href="/chat" class="{{ 'active' if active == 'chat' }}">
+    <span class="ico">💬</span><span class="lbl">{{ tr('nav.chat') }}</span>
+    {% set cu = nav_chat_unread(user) %}
+    {% if cu %}<span class="tabbar-badge">{{ cu }}</span>{% endif %}
+  </a>
+  <a href="/aufgaben" class="{{ 'active' if active == 'aufgaben' }}">
+    <span class="ico">📋</span><span class="lbl">{{ tr('nav.tasks') }}</span>
+    {% set ot = nav_open_tasks(user) %}
+    {% if ot %}<span class="tabbar-badge">{{ ot }}</span>{% endif %}
+  </a>
+  <a href="/melden" class="{{ 'active' if active == 'melden' }}">
+    <span class="ico">🛠️</span><span class="lbl">{{ tr('nav.report') }}</span>
+  </a>
+</nav>

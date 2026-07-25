@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titel }} · DispoHub</title>
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="brand">Fleet<span>Hub</span></div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:40px;margin-bottom:6px">{{ icon }}</div>
+        <h2 style="margin:0 0 8px">{{ titel }}</h2>
+        <p class="muted" style="margin:0 0 18px">{{ text }}</p>
+        {% if angemeldet_als %}
+        <p class="muted" style="font-size:13px;margin-bottom:18px">
+          Angemeldet als <strong>{{ angemeldet_als }}</strong> ({{ rolle_label }}).
+          Falls du in einem anderen Tab eine andere Rolle getestet hast: die
+          Anmeldung gilt für den ganzen Browser, nicht nur für einen Tab.
+        </p>
+        {% endif %}
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <a href="/" class="btn ghost sm">← Zum Dashboard</a>
+          <a href="/logout" class="btn ghost sm">Abmelden & neu anmelden</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

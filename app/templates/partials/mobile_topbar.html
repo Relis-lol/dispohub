@@ -1,0 +1,15 @@
+<div class="mobilebar">
+  <div class="brand">Fleet<span>Hub</span></div>
+  <div class="mobilebar-actions">
+    {% include "partials/lang_switcher.html" %}
+    <a href="/kontakte" title="{{ tr('nav.contacts') }}">📞</a>
+    <a href="/passwort" title="{{ tr('nav.password') }}">🔑</a>
+    <button type="button" onclick="fhRequestNotificationPermission()" title="{{ tr('nav.notifications') }}">
+      <span class="notify-toggle-label">🔕</span>
+    </button>
+    <button type="button" onclick="fhToggleTheme()" title="{{ tr('nav.theme') }}">
+      <span class="theme-toggle-label">🌙</span>
+    </button>
+    <a href="/logout" class="logout-link">{{ tr('nav.logout') }}</a>
+  </div>
+</div>

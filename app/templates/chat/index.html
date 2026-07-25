@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Chat · DispoHub{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Chat</h1></div>
+
+<div class="chat-wrap">
+  <aside class="chat-threads">
+    {% set gruppen = threads|selectattr('art.value', 'equalto', 'gruppe')|list %}
+    {% set direkt = threads|selectattr('art.value', 'equalto', 'direkt')|list %}
+
+    {% if gruppen %}
+    <div class="thread-section">Gruppen</div>
+    {% for th in gruppen %}
+    <a href="/chat/{{ th.id }}" class="thread {{ 'active' if t and th.id == t.id }}">
+      <span class="ico">👥</span>
+      <span class="grow">
+        <span class="tname">{{ th.anzeige_name(user) }}</span>
+        {% if th.messages %}<span class="tprev">{{ ('🚫 Nachricht gelöscht' if th.messages[-1].geloescht else (th.messages[-1].text or '📷 Bild'))|truncate(30) }}</span>{% endif %}
+      </span>
+      {% if unread.get(th.id) %}<span class="badge tone-bad">{{ unread[th.id] }}</span>{% endif %}
+    </a>
+    {% endfor %}
+    {% endif %}
+
+    {% if direkt %}
+    <div class="thread-section">Fahrer anschreiben</div>
+    {% for th in direkt %}
+    <a href="/chat/{{ th.id }}" class="thread {{ 'active' if t and th.id == t.id }}">
+      <span class="ico">👤</span>
+      <span class="grow">
+        <span class="tname">{{ th.anzeige_name(user) }}</span>
+        {% if th.messages %}<span class="tprev">{{ ('🚫 Nachricht gelöscht' if th.messages[-1].geloescht else (th.messages[-1].text or '📷 Bild'))|truncate(30) }}</span>{% endif %}
+      </span>
+      {% if unread.get(th.id) %}<span class="badge tone-bad">{{ unread[th.id] }}</span>{% endif %}
+    </a>
+    {% endfor %}
+    {% endif %}
+
+    {% if not threads %}<div class="empty">Keine Unterhaltungen.</div>{% endif %}
+  </aside>
+
+  <section class="chat-main">
+    {% if t %}
+      {% include "chat/_conversation.html" %}
+    {% else %}
+      <div class="empty" style="margin:auto">Wähle links eine Unterhaltung.</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
