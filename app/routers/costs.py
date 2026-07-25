@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.deps import require_area
 from app.models import CostEntry, Vehicle
-from app.models.cost import CATEGORY_LABELS
 from app.templating import templates
 
 router = APIRouter(prefix="/kosten")
@@ -27,7 +26,7 @@ def uebersicht(request: Request, user=Depends(require_kosten), db: Session = Dep
         .all()
     )
     je_kategorie = sorted(
-        [(CATEGORY_LABELS.get(k, k.value), float(s)) for k, s in je_kategorie],
+        [(k.value, float(s)) for k, s in je_kategorie],
         key=lambda x: -x[1],
     )
 

@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Kosten · DispoHub{% endblock %}
+{% block title %}{{ tr('costs.title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Kosten</h1><span class="sub">Aktueller Monat · {{ today().strftime('%m/%Y') }}</span>
+<div class="page-head"><h1>{{ tr('costs.title') }}</h1><span class="sub">{{ tr('costs.current_month') }} · {{ today().strftime('%m/%Y') }}</span>
   <div class="spacer"></div>
-  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">{{ tr('common.print') }}</button>
 </div>
 
 <div class="grid cols-3" style="margin-bottom:16px">
-  <div class="card stat big"><span class="lbl">Gesamt diesen Monat</span><span class="num">{{ gesamt_monat|euro }}</span></div>
+  <div class="card stat big"><span class="lbl">{{ tr('costs.total_this_month') }}</span><span class="num">{{ gesamt_monat|euro }}</span></div>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>Nach Kategorie</h2>
+    <h2>{{ tr('costs.by_category') }}</h2>
     <div class="rowlist">
-      {% for label, summe in je_kategorie %}
-      <div class="row"><span class="grow t">{{ label }}</span><span class="t">{{ summe|euro }}</span></div>
-      {% else %}<div class="empty">Keine Kosten erfasst.</div>{% endfor %}
+      {% for kategorie_wert, summe in je_kategorie %}
+      <div class="row"><span class="grow t">{{ tr('cost_category.' + kategorie_wert) }}</span><span class="t">{{ summe|euro }}</span></div>
+      {% else %}<div class="empty">{{ tr('costs.no_costs') }}</div>{% endfor %}
     </div>
   </div>
 
   <div class="card">
-    <h2>Nach Fahrzeug</h2>
+    <h2>{{ tr('costs.by_vehicle') }}</h2>
     <div class="rowlist">
       {% for v, summe in je_fahrzeug %}
       <div class="row">
@@ -35,15 +35,15 @@
 </div>
 
 <div class="card" style="margin-top:16px">
-  <h2>Letzte Buchungen</h2>
+  <h2>{{ tr('costs.recent_entries') }}</h2>
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>Datum</th><th>Kategorie</th><th>Fahrzeug</th><th>Beschreibung</th><th class="num">Betrag</th></tr></thead>
+    <thead><tr><th>{{ tr('costs.col_date') }}</th><th>{{ tr('costs.col_category') }}</th><th>{{ tr('costs.col_vehicle') }}</th><th>{{ tr('costs.col_description') }}</th><th class="num">{{ tr('costs.col_amount') }}</th></tr></thead>
     <tbody>
     {% for c in letzte %}
       <tr>
         <td>{{ c.datum|datum }}</td>
-        <td>{{ c.kategorie_label }}</td>
+        <td>{{ tr('cost_category.' + c.kategorie.value) }}</td>
         <td>{{ c.vehicle.kennzeichen if c.vehicle else '—' }}</td>
         <td class="muted">{{ c.beschreibung }}</td>
         <td class="num">{{ c.betrag|euro }}</td>
