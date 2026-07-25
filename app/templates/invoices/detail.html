@@ -1,55 +1,55 @@
 {% extends "base.html" %}
-{% block title %}Rechnung prüfen · DispoHub{% endblock %}
+{% block title %}{{ tr('invoices.detail_title') }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Rechnung prüfen</h1>
-  <span class="badge tone-{{ inv.status_tone }}">{{ inv.status_label }}</span>
+  <h1>{{ tr('invoices.detail_title') }}</h1>
+  <span class="badge tone-{{ inv.status_tone }}">{{ tr('invoice_status.' + inv.status.value) }}</span>
   <div class="spacer"></div>
-  <a href="/rechnungen" class="btn ghost sm">← Eingang</a>
+  <a href="/rechnungen" class="btn ghost sm">{{ tr('invoices.back_inbox') }}</a>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>E-Mail / Beleg</h2>
+    <h2>{{ tr('invoices.email_document') }}</h2>
     <div class="rowlist">
-      <div class="row"><span class="grow s">Absender</span><span class="t">{{ inv.absender }}</span></div>
-      <div class="row"><span class="grow s">Betreff</span><span class="t">{{ inv.betreff }}</span></div>
-      <div class="row"><span class="grow s">Rechnungsnr.</span><span class="t">{{ inv.rechnungsnummer or '—' }}</span></div>
-      <div class="row"><span class="grow s">Rechnungsdatum</span><span class="t">{{ inv.rechnungsdatum|datum }}</span></div>
-      <div class="row"><span class="grow s">Eingegangen</span><span class="t">{{ inv.eingegangen_am.strftime('%d.%m.%Y %H:%M') }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('invoices.sender') }}</span><span class="t">{{ inv.absender }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('invoices.subject') }}</span><span class="t">{{ inv.betreff }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('invoices.invoice_no') }}</span><span class="t">{{ inv.rechnungsnummer or '—' }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('invoices.invoice_date') }}</span><span class="t">{{ inv.rechnungsdatum|datum }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('invoices.received') }}</span><span class="t">{{ inv.eingegangen_am.strftime('%d.%m.%Y %H:%M') }}</span></div>
     </div>
     {% if inv.hinweis %}<p class="muted" style="margin-top:10px">🔎 {{ inv.hinweis }}</p>{% endif %}
-    {% if inv.ist_duplikat %}<p class="badge tone-bad" style="margin-top:8px">⚠ Mögliches Duplikat – bitte gegenprüfen</p>{% endif %}
+    {% if inv.ist_duplikat %}<p class="badge tone-bad" style="margin-top:8px">{{ tr('invoices.possible_duplicate') }}</p>{% endif %}
   </div>
 
   <div class="card">
-    <h2>Zuordnung bestätigen</h2>
+    <h2>{{ tr('invoices.confirm_assignment') }}</h2>
     <form method="post" action="/rechnungen/{{ inv.id }}/bestaetigen">
-      <label for="betrag">Betrag (€)</label>
+      <label for="betrag">{{ tr('invoices.amount') }}</label>
       <input id="betrag" name="betrag" type="number" step="0.01" min="0"
              value="{{ '%.2f'|format(inv.betrag) if inv.betrag is not none else '' }}" required>
 
-      <label for="kategorie">Kostenkategorie</label>
+      <label for="kategorie">{{ tr('invoices.cost_category') }}</label>
       <select id="kategorie" name="kategorie">
-        {% for val, label in kategorien %}
-        <option value="{{ val }}" {{ 'selected' if inv.vorschlag_kategorie and inv.vorschlag_kategorie.value == val }}>{{ label }}</option>
+        {% for val in kategorien %}
+        <option value="{{ val }}" {{ 'selected' if inv.vorschlag_kategorie and inv.vorschlag_kategorie.value == val }}>{{ tr('cost_category.' + val) }}</option>
         {% endfor %}
       </select>
 
-      <label for="vehicle_id">Fahrzeug (optional)</label>
+      <label for="vehicle_id">{{ tr('invoices.vehicle_optional') }}</label>
       <select id="vehicle_id" name="vehicle_id">
-        <option value="">— Allgemein / kein Fahrzeug —</option>
+        <option value="">{{ tr('invoices.general_no_vehicle') }}</option>
         {% for v in fahrzeuge %}
         <option value="{{ v.id }}" {{ 'selected' if inv.vorschlag_vehicle_id == v.id }}>{{ v.kennzeichen }} — {{ v.hersteller }} {{ v.modell }}</option>
         {% endfor %}
       </select>
 
       {% if inv.vorschlag_kategorie or inv.vorschlag_vehicle_id %}
-      <p class="muted" style="margin-top:10px">Vorschläge aus der Vorsortierung sind vorausgewählt.</p>
+      <p class="muted" style="margin-top:10px">{{ tr('invoices.suggestions_preselected') }}</p>
       {% endif %}
 
       <div style="height:12px"></div>
-      <button class="btn block" type="submit">✓ Bestätigen &amp; als Kosten buchen</button>
+      <button class="btn block" type="submit">{{ tr('invoices.confirm_book') }}</button>
     </form>
   </div>
 </div>

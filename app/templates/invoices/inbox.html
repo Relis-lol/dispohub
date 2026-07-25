@@ -1,30 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Rechnungen · DispoHub{% endblock %}
+{% block title %}{{ tr('nav.invoices') }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Rechnungs-Eingang</h1>
-  <span class="sub">{{ offen|length }} zu prüfen</span>
+  <h1>{{ tr('invoices.inbox_title') }}</h1>
+  <span class="sub">{{ tr('invoices.to_review', n=offen|length) }}</span>
   <div class="spacer"></div>
   {% if imap_konfiguriert %}
   <form method="post" action="/rechnungen/abrufen">
-    <button class="btn sm" type="submit">📧 Postfach abrufen</button>
+    <button class="btn sm" type="submit">{{ tr('invoices.fetch_inbox') }}</button>
   </form>
   {% else %}
   <form method="post" action="/rechnungen/simulieren">
-    <button class="btn ghost sm" type="submit">📨 Eingang simulieren</button>
+    <button class="btn ghost sm" type="submit">{{ tr('invoices.simulate_inbox') }}</button>
   </form>
   {% endif %}
 </div>
 {% if not imap_konfiguriert %}
 <p class="muted no-print" style="margin:-8px 0 14px;font-size:13px">
-  Läuft aktuell simuliert. Echter E-Mail-Abruf ist technisch vorbereitet
-  (siehe <code>app/services/mail_ingest.py</code>) — sobald ein Belege-Postfach
-  eingerichtet ist, reichen drei Zeilen in <code>.env</code>.
+  {{ tr('invoices.simulated_notice') }}
 </p>
 {% endif %}
 
 <div class="card">
-  <h2>📥 Prüf-Inbox <span class="count">{{ offen|length }}</span></h2>
+  <h2>{{ tr('invoices.review_inbox') }} <span class="count">{{ offen|length }}</span></h2>
   <div class="rowlist">
     {% for i in offen %}
     <div class="row">
@@ -32,28 +30,28 @@
       <div class="grow">
         <div class="t"><a href="/rechnungen/{{ i.id }}">{{ i.betreff }}</a></div>
         <div class="s">{{ i.absender }}
-          {% if i.rechnungsnummer %} · Nr. {{ i.rechnungsnummer }}{% endif %}
+          {% if i.rechnungsnummer %} · {{ tr('invoices.no_number', nr=i.rechnungsnummer) }}{% endif %}
           {% if i.hinweis %} · <span class="muted">{{ i.hinweis }}</span>{% endif %}</div>
       </div>
-      {% if i.ist_duplikat %}<span class="badge tone-bad">Duplikat?</span>{% endif %}
-      {% if i.vorschlag_kategorie %}<span class="badge tone-info">{{ i.vorschlag_kategorie.value }}</span>{% endif %}
+      {% if i.ist_duplikat %}<span class="badge tone-bad">{{ tr('invoices.duplicate') }}</span>{% endif %}
+      {% if i.vorschlag_kategorie %}<span class="badge tone-info">{{ tr('cost_category.' + i.vorschlag_kategorie.value) }}</span>{% endif %}
       <span class="t">{{ i.betrag|euro }}</span>
     </div>
-    {% else %}<div class="empty">Keine offenen Rechnungen. 🎉</div>{% endfor %}
+    {% else %}<div class="empty">{{ tr('invoices.no_open_invoices') }}</div>{% endfor %}
   </div>
 </div>
 
 <div class="card" style="margin-top:16px">
-  <h2>✓ Zuletzt geprüft</h2>
+  <h2>{{ tr('invoices.recently_reviewed') }}</h2>
   <div class="rowlist">
     {% for i in geprueft %}
     <div class="row">
       <div class="grow"><div class="t">{{ i.betreff }}</div>
-        <div class="s">{{ i.absender }} · {{ i.vehicle.kennzeichen if i.vehicle else 'Allgemein' }}</div></div>
-      <span class="badge tone-ok">{{ i.kategorie.value if i.kategorie else '—' }}</span>
+        <div class="s">{{ i.absender }} · {{ i.vehicle.kennzeichen if i.vehicle else tr('dashboard.general') }}</div></div>
+      <span class="badge tone-ok">{{ tr('cost_category.' + i.kategorie.value) if i.kategorie else '—' }}</span>
       <span class="t">{{ i.betrag|euro }}</span>
     </div>
-    {% else %}<div class="empty">Noch nichts geprüft.</div>{% endfor %}
+    {% else %}<div class="empty">{{ tr('invoices.nothing_reviewed_yet') }}</div>{% endfor %}
   </div>
 </div>
 {% endblock %}

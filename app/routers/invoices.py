@@ -61,7 +61,7 @@ def detail(invoice_id: int, request: Request, user=Depends(require_rechnungen),
         raise HTTPException(status_code=404, detail="Rechnung nicht gefunden")
     fahrzeuge = (db.query(Vehicle).filter(Vehicle.geloescht_am.is_(None))
                  .order_by(Vehicle.kennzeichen).all())
-    kategorien = [(c.value, CATEGORY_LABELS[c]) for c in CostCategory]
+    kategorien = [c.value for c in CostCategory]
     return templates.TemplateResponse(
         "invoices/detail.html",
         {"request": request, "user": user, "active": "rechnungen",
