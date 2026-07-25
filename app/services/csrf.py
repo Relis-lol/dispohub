@@ -57,10 +57,9 @@ class CSRFMiddleware(BaseHTTPMiddleware):
                 return templates.TemplateResponse(
                     "error.html",
                     {
-                        "request": request, "icon": "🔄", "titel": "Sicherheitsprüfung fehlgeschlagen",
-                        "text": "Das Formular ist abgelaufen oder wurde in einem anderen Tab/Fenster "
-                                "geöffnet. Bitte Seite neu laden und erneut versuchen.",
-                        "angemeldet_als": None, "rolle_label": None,
+                        "request": request, "icon": "🔄", "titel_key": "error.csrf_title",
+                        "text_key": "error.csrf_text", "custom_text": None,
+                        "angemeldet_als": None, "user_role": None,
                     },
                     status_code=403,
                 )

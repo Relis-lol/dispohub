@@ -597,6 +597,16 @@ DE = {
     "draufsicht.where_placeholder": "z.B. Betriebshof, A9 Rasthof...",
     "draufsicht.urgency": "Dringlichkeit",
     "draufsicht.photos": "Fotos",
+    "common.open_menu": "Menü öffnen",
+    "error.403_title": "Kein Zugriff",
+    "error.403_text": "Für diesen Bereich fehlt die Berechtigung.",
+    "error.404_title": "Nicht gefunden",
+    "error.404_text": "Diese Seite oder dieser Eintrag existiert nicht (mehr).",
+    "error.csrf_title": "Sicherheitsprüfung fehlgeschlagen",
+    "error.csrf_text": "Das Formular ist abgelaufen oder wurde in einem anderen Tab/Fenster geöffnet. Bitte Seite neu laden und erneut versuchen.",
+    "error.logged_in_as": "Angemeldet als <strong>{name}</strong> ({rolle}). Falls du in einem anderen Tab eine andere Rolle getestet hast: die Anmeldung gilt für den ganzen Browser, nicht nur für einen Tab.",
+    "error.back_dashboard": "← Zum Dashboard",
+    "error.logout_relogin": "Abmelden & neu anmelden",
 }
 
 CS = {
@@ -1184,6 +1194,16 @@ CS = {
     "draufsicht.where_placeholder": "např. dvůr firmy, odpočívadlo A9...",
     "draufsicht.urgency": "Naléhavost",
     "draufsicht.photos": "Fotky",
+    "common.open_menu": "Otevřít menu",
+    "error.403_title": "Přístup odepřen",
+    "error.403_text": "Pro tuto oblast chybí oprávnění.",
+    "error.404_title": "Nenalezeno",
+    "error.404_text": "Tato stránka nebo záznam již neexistuje.",
+    "error.csrf_title": "Bezpečnostní kontrola selhala",
+    "error.csrf_text": "Formulář vypršel nebo byl otevřen v jiné záložce/okně. Načtěte prosím stránku znovu a zkuste to znovu.",
+    "error.logged_in_as": "Přihlášen jako <strong>{name}</strong> ({rolle}). Pokud jste v jiné záložce testovali jinou roli: přihlášení platí pro celý prohlížeč, ne jen pro jednu záložku.",
+    "error.back_dashboard": "← Na nástěnku",
+    "error.logout_relogin": "Odhlásit se a znovu přihlásit",
 }
 
 EN = {
@@ -1771,6 +1791,16 @@ EN = {
     "draufsicht.where_placeholder": "e.g. depot, highway rest stop...",
     "draufsicht.urgency": "Urgency",
     "draufsicht.photos": "Photos",
+    "common.open_menu": "Open menu",
+    "error.403_title": "Access denied",
+    "error.403_text": "You don't have permission for this area.",
+    "error.404_title": "Not found",
+    "error.404_text": "This page or entry no longer exists.",
+    "error.csrf_title": "Security check failed",
+    "error.csrf_text": "The form has expired or was opened in another tab/window. Please reload the page and try again.",
+    "error.logged_in_as": "Logged in as <strong>{name}</strong> ({rolle}). If you tested a different role in another tab: the login applies to the whole browser, not just one tab.",
+    "error.back_dashboard": "← To the dashboard",
+    "error.logout_relogin": "Log out & sign in again",
 }
 
 RU = {
@@ -2358,6 +2388,16 @@ RU = {
     "draufsicht.where_placeholder": "напр. автопарк, зона отдыха на трассе...",
     "draufsicht.urgency": "Срочность",
     "draufsicht.photos": "Фото",
+    "common.open_menu": "Открыть меню",
+    "error.403_title": "Нет доступа",
+    "error.403_text": "Недостаточно прав для этого раздела.",
+    "error.404_title": "Не найдено",
+    "error.404_text": "Эта страница или запись больше не существует.",
+    "error.csrf_title": "Проверка безопасности не пройдена",
+    "error.csrf_text": "Срок действия формы истёк, или она была открыта в другой вкладке/окне. Пожалуйста, перезагрузите страницу и попробуйте снова.",
+    "error.logged_in_as": "Вы вошли как <strong>{name}</strong> ({rolle}). Если вы тестировали другую роль в другой вкладке: вход действует для всего браузера, а не только для одной вкладки.",
+    "error.back_dashboard": "← На главную",
+    "error.logout_relogin": "Выйти и войти снова",
 }
 
 PL = {
@@ -2945,6 +2985,16 @@ PL = {
     "draufsicht.where_placeholder": "np. baza firmy, MOP na A9...",
     "draufsicht.urgency": "Pilność",
     "draufsicht.photos": "Zdjęcia",
+    "common.open_menu": "Otwórz menu",
+    "error.403_title": "Brak dostępu",
+    "error.403_text": "Brak uprawnień do tego obszaru.",
+    "error.404_title": "Nie znaleziono",
+    "error.404_text": "Ta strona lub wpis już nie istnieje.",
+    "error.csrf_title": "Kontrola bezpieczeństwa nie powiodła się",
+    "error.csrf_text": "Formularz wygasł lub został otwarty w innej karcie/oknie. Odśwież stronę i spróbuj ponownie.",
+    "error.logged_in_as": "Zalogowano jako <strong>{name}</strong> ({rolle}). Jeśli testowałeś inną rolę w innej karcie: logowanie dotyczy całej przeglądarki, nie tylko jednej karty.",
+    "error.back_dashboard": "← Do panelu",
+    "error.logout_relogin": "Wyloguj się i zaloguj ponownie",
 }
 
 TR = {
@@ -3532,6 +3582,16 @@ TR = {
     "draufsicht.where_placeholder": "örn. depo, otoyol dinlenme tesisi...",
     "draufsicht.urgency": "Aciliyet",
     "draufsicht.photos": "Fotoğraflar",
+    "common.open_menu": "Menüyü aç",
+    "error.403_title": "Erişim yok",
+    "error.403_text": "Bu alan için izniniz yok.",
+    "error.404_title": "Bulunamadı",
+    "error.404_text": "Bu sayfa veya kayıt artık mevcut değil.",
+    "error.csrf_title": "Güvenlik kontrolü başarısız",
+    "error.csrf_text": "Form süresi doldu veya başka bir sekmede/pencerede açıldı. Lütfen sayfayı yeniden yükleyip tekrar deneyin.",
+    "error.logged_in_as": "<strong>{name}</strong> ({rolle}) olarak giriş yapıldı. Başka bir sekmede farklı bir rol denediyseniz: oturum açma tüm tarayıcı için geçerlidir, sadece bir sekme için değil.",
+    "error.back_dashboard": "← Panele git",
+    "error.logout_relogin": "Çıkış yap ve tekrar giriş yap",
 }
 
 TRANSLATIONS = {"de": DE, "cs": CS, "en": EN, "ru": RU, "pl": PL, "tr": TR}

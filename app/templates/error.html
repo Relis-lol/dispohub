@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="de">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ titel }} · DispoHub</title>
+  <title>{{ tr(titel_key) }} · DispoHub</title>
   <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}">
 </head>
 <body>
@@ -12,18 +12,16 @@
       <div class="brand">Dispo<span>Hub</span></div>
       <div class="card" style="text-align:center">
         <div style="font-size:40px;margin-bottom:6px">{{ icon }}</div>
-        <h2 style="margin:0 0 8px">{{ titel }}</h2>
-        <p class="muted" style="margin:0 0 18px">{{ text }}</p>
+        <h2 style="margin:0 0 8px">{{ tr(titel_key) }}</h2>
+        <p class="muted" style="margin:0 0 18px">{{ custom_text or tr(text_key) }}</p>
         {% if angemeldet_als %}
         <p class="muted" style="font-size:13px;margin-bottom:18px">
-          Angemeldet als <strong>{{ angemeldet_als }}</strong> ({{ rolle_label }}).
-          Falls du in einem anderen Tab eine andere Rolle getestet hast: die
-          Anmeldung gilt für den ganzen Browser, nicht nur für einen Tab.
+          {{ tr('error.logged_in_as', name=angemeldet_als, rolle=tr('role.' + user_role))|safe }}
         </p>
         {% endif %}
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-          <a href="/" class="btn ghost sm">← Zum Dashboard</a>
-          <a href="/logout" class="btn ghost sm">Abmelden & neu anmelden</a>
+          <a href="/" class="btn ghost sm">{{ tr('error.back_dashboard') }}</a>
+          <a href="/logout" class="btn ghost sm">{{ tr('error.logout_relogin') }}</a>
         </div>
       </div>
     </div>

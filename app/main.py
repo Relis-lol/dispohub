@@ -67,8 +67,8 @@ def health():
 
 
 _FEHLER_TEXTE = {
-    403: ("🚫", "Kein Zugriff", "Für diesen Bereich fehlt die Berechtigung."),
-    404: ("🔍", "Nicht gefunden", "Diese Seite oder dieser Eintrag existiert nicht (mehr)."),
+    403: ("🚫", "error.403_title", "error.403_text"),
+    404: ("🔍", "error.404_title", "error.404_text"),
 }
 
 
@@ -81,15 +81,16 @@ async def html_fehlerseite(request: Request, exc: StarletteHTTPException):
         from fastapi.responses import JSONResponse
         return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
 
-    icon, titel, standardtext = _FEHLER_TEXTE[exc.status_code]
+    icon, titel_key, text_key = _FEHLER_TEXTE[exc.status_code]
     user = get_current_user(request, next(_get_db_for_error()))
+    custom_text = exc.detail if isinstance(exc.detail, str) and exc.detail != "Not Found" else None
     return templates.TemplateResponse(
         "error.html",
         {
-            "request": request, "icon": icon, "titel": titel,
-            "text": exc.detail if isinstance(exc.detail, str) and exc.detail != "Not Found" else standardtext,
+            "request": request, "icon": icon, "titel_key": titel_key,
+            "text_key": text_key, "custom_text": custom_text,
             "angemeldet_als": user.name if user else None,
-            "rolle_label": user.role_label if user else None,
+            "user_role": user.role.value if user else None,
         },
         status_code=exc.status_code,
     )
