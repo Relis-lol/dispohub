@@ -52,10 +52,12 @@ a:hover { text-decoration: underline; }
 .sidebar {
   width: 230px; background: var(--surface); border-right: 1px solid var(--border);
   padding: 18px 14px; position: sticky; top: 0; height: 100vh; flex-shrink: 0;
+  display: flex; flex-direction: column;
 }
-.brand { font-weight: 700; font-size: 19px; color: var(--brand-dark); margin: 4px 8px 20px; }
+.brand { font-weight: 700; font-size: 19px; color: var(--brand-dark); margin: 4px 8px 20px; flex-shrink: 0; }
 .brand span { color: var(--brand); }
 .brand-logo img { max-width: 100%; max-height: 56px; object-fit: contain; display: block; }
+.nav { overflow-y: auto; flex: 1 1 auto; min-height: 0; }
 .nav a {
   display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px;
   color: var(--text); font-weight: 500; margin-bottom: 3px;
@@ -65,7 +67,11 @@ a:hover { text-decoration: underline; }
 .nav .ico { width: 20px; text-align: center; }
 .nav .badge { margin-left: auto; }
 
-.sidebar-foot { position: absolute; bottom: 16px; left: 14px; right: 14px; font-size: 13px; }
+/* Wächst mit dem Menü mit statt fest am unteren Rand zu kleben (sonst
+   überlappt es bei vielen Menüpunkten, siehe Nutzer-Screenshot) — sitzt per
+   Flexbox unten, wird aber von .nav bei Bedarf nach unten verdrängt statt
+   sich mit ihm zu überschneiden. */
+.sidebar-foot { flex-shrink: 0; font-size: 13px; padding-top: 12px; }
 .sidebar-foot .who { color: var(--muted); margin-bottom: 8px; padding: 0 8px; }
 
 .main { flex: 1; padding: 22px 26px; max-width: 1100px; }
