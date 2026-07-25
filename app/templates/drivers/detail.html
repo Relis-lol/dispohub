@@ -3,186 +3,186 @@
 {% block content %}
 <div class="page-head">
   <h1>{{ m.name }}</h1>
-  <span class="badge tone-info">{{ m.role_label }}</span>
-  <span class="badge tone-{{ 'ok' if m.status.value == 'aktiv' else 'muted' }}">{{ m.status.value }}</span>
+  <span class="badge tone-info">{{ tr('role.' + m.role.value) }}</span>
+  <span class="badge tone-{{ 'ok' if m.status.value == 'aktiv' else 'muted' }}">{{ tr('user_status.' + m.status.value) }}</span>
   <div class="spacer"></div>
-  <button type="button" class="btn no-print" onclick="window.print()">🖨️ Als PDF drucken</button>
-  <a href="/mitarbeiter" class="btn ghost sm no-print">← Übersicht</a>
+  <button type="button" class="btn no-print" onclick="window.print()">{{ tr('drivers.print_pdf') }}</button>
+  <a href="/mitarbeiter" class="btn ghost sm no-print">{{ tr('drivers.back_overview') }}</a>
 </div>
 
 {% set resturlaub = m.urlaubstage_kontingent - urlaub_genommen %}
 <div class="grid cols-3 quickview" style="margin-bottom:16px">
   <div class="card stat big">
-    <span class="lbl">Fahrerkarte</span>
+    <span class="lbl">{{ tr('drivers.driver_card') }}</span>
     <span class="num badge tone-{{ ampel_tone(m.fahrerkarte_ablauf) }}" style="font-size:18px">{{ m.fahrerkarte_ablauf|datum }}</span>
   </div>
   <div class="card stat big">
-    <span class="lbl">ADR-Karte</span>
+    <span class="lbl">{{ tr('drivers.adr_card') }}</span>
     <span class="num badge tone-{{ ampel_tone(m.adr_karte_ablauf) }}" style="font-size:18px">{{ m.adr_karte_ablauf|datum }}</span>
   </div>
   <div class="card stat big">
-    <span class="lbl">Resturlaub {{ jahr }}</span>
-    <span class="num" style="color:{{ 'var(--bad-fg)' if resturlaub <= 0 else 'var(--ok-fg)' }}">{{ resturlaub }} Tage</span>
+    <span class="lbl">{{ tr('drivers.remaining_vacation_year', jahr=jahr) }}</span>
+    <span class="num" style="color:{{ 'var(--bad-fg)' if resturlaub <= 0 else 'var(--ok-fg)' }}">{{ resturlaub }} {{ tr('drivers.days') }}</span>
   </div>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>Person & Kontakt</h2>
+    <h2>{{ tr('drivers.person_contact') }}</h2>
     <div style="display:flex;gap:14px;align-items:flex-start">
       {% if m.foto_pfad %}
       <a href="{{ m.foto_pfad }}" target="_blank"><img src="{{ m.foto_pfad }}" alt="Profilfoto"
         style="width:96px;height:96px;object-fit:cover;border-radius:12px"></a>
       {% endif %}
       <div class="rowlist grow" style="flex:1">
-        <div class="row"><span class="grow s">Rolle</span><span class="t">{{ m.role_label }}</span></div>
-        <div class="row"><span class="grow s">E-Mail</span><span class="t">{{ m.email }}</span></div>
-        <div class="row"><span class="grow s">Telefon</span><span class="t">{{ m.phone or '—' }}</span></div>
-        <div class="row"><span class="grow s">Geburtstag</span><span class="t">{{ m.geburtstag|datum }}</span></div>
-        <div class="row"><span class="grow s">Fahrzeug</span>
+        <div class="row"><span class="grow s">{{ tr('drivers.col_role') }}</span><span class="t">{{ tr('role.' + m.role.value) }}</span></div>
+        <div class="row"><span class="grow s">{{ tr('drivers.email') }}</span><span class="t">{{ m.email }}</span></div>
+        <div class="row"><span class="grow s">{{ tr('drivers.phone') }}</span><span class="t">{{ m.phone or '—' }}</span></div>
+        <div class="row"><span class="grow s">{{ tr('drivers.col_birthday') }}</span><span class="t">{{ m.geburtstag|datum }}</span></div>
+        <div class="row"><span class="grow s">{{ tr('drivers.col_vehicle') }}</span>
           <span class="t">{% if m.vehicle %}<a href="/fahrzeuge/{{ m.vehicle.id }}">{{ m.vehicle.kennzeichen }}</a>{% else %}—{% endif %}</span></div>
       </div>
     </div>
     <form method="post" action="/mitarbeiter/{{ m.id }}/foto" enctype="multipart/form-data"
           class="no-print" style="display:flex;gap:8px;align-items:center;margin-top:10px">
       <input type="file" name="foto" accept="image/*" required>
-      <button class="btn ghost sm" type="submit">Foto speichern</button>
+      <button class="btn ghost sm" type="submit">{{ tr('drivers.save_photo') }}</button>
     </form>
 
     <details class="kulli-details no-print">
-      <summary>✏️ Daten bearbeiten</summary>
+      <summary>{{ tr('drivers.edit_data') }}</summary>
       <form method="post" action="/mitarbeiter/{{ m.id }}/stammdaten">
-        <label for="ed-name">Name</label>
+        <label for="ed-name">{{ tr('drivers.col_name') }}</label>
         <input id="ed-name" name="name" required value="{{ m.name }}">
-        <label for="ed-email">E-Mail</label>
+        <label for="ed-email">{{ tr('drivers.email') }}</label>
         <input id="ed-email" name="email" type="email" required value="{{ m.email }}">
-        <label for="ed-telefon">Telefon</label>
+        <label for="ed-telefon">{{ tr('drivers.phone') }}</label>
         <input id="ed-telefon" name="telefon" value="{{ m.phone or '' }}">
-        <label for="ed-geburtstag">Geburtstag</label>
+        <label for="ed-geburtstag">{{ tr('drivers.col_birthday') }}</label>
         <input id="ed-geburtstag" name="geburtstag" type="date"
                value="{{ m.geburtstag.isoformat() if m.geburtstag }}">
-        <label for="ed-status">Status</label>
+        <label for="ed-status">{{ tr('drivers.col_status') }}</label>
         <select id="ed-status" name="status">
           {% for s in status_werte %}
-          <option value="{{ s }}" {{ 'selected' if m.status.value == s }}>{{ s }}</option>
+          <option value="{{ s }}" {{ 'selected' if m.status.value == s }}>{{ tr('user_status.' + s) }}</option>
           {% endfor %}
         </select>
         {% if user.role.value in ['admin', 'geschaeftsfuehrung'] and m.id != user.id %}
-        <label for="ed-rolle">Rolle</label>
+        <label for="ed-rolle">{{ tr('drivers.col_role') }}</label>
         <select id="ed-rolle" name="rolle">
-          {% for wert, label in rollen %}
-          <option value="{{ wert }}" {{ 'selected' if m.role.value == wert }}>{{ label }}</option>
+          {% for wert in rollen %}
+          <option value="{{ wert }}" {{ 'selected' if m.role.value == wert }}>{{ tr('role.' + wert) }}</option>
           {% endfor %}
         </select>
         {% endif %}
         <div style="height:10px"></div>
-        <button class="btn ghost sm" type="submit">Änderungen speichern</button>
+        <button class="btn ghost sm" type="submit">{{ tr('drivers.save_changes') }}</button>
       </form>
       {% if user.role.value in ['admin', 'geschaeftsfuehrung'] %}
       <form method="post" action="/mitarbeiter/{{ m.id }}/passwort"
             style="margin-top:12px;display:flex;gap:8px;align-items:end"
-            onsubmit="return confirm('Passwort für {{ m.name }} wirklich zurücksetzen?')">
+            onsubmit="return confirm('{{ tr('drivers.confirm_reset_password', name=m.name) }}')">
         <div style="flex:1">
-          <label for="ed-passwort" style="margin-top:0">Neues Passwort (min. 6 Zeichen)</label>
+          <label for="ed-passwort" style="margin-top:0">{{ tr('drivers.new_password_hint') }}</label>
           <input id="ed-passwort" name="neues_passwort" type="text" required minlength="6"
-                 placeholder="wird dem Mitarbeiter mitgeteilt">
+                 placeholder="{{ tr('drivers.new_password_placeholder') }}">
         </div>
-        <button class="btn ghost sm" type="submit">🔑 Zurücksetzen</button>
+        <button class="btn ghost sm" type="submit">{{ tr('drivers.reset_password') }}</button>
       </form>
       {% endif %}
     </details>
   </div>
 
   <div class="card">
-    <h2>Karten & Urlaubskontingent</h2>
+    <h2>{{ tr('drivers.cards_vacation_title') }}</h2>
     <div class="rowlist">
-      <div class="row"><span class="grow s">Fahrerkarte gültig bis</span>
+      <div class="row"><span class="grow s">{{ tr('drivers.driver_card_valid_until') }}</span>
         <span class="badge tone-{{ ampel_tone(m.fahrerkarte_ablauf) }}">{{ m.fahrerkarte_ablauf|datum }}</span></div>
-      <div class="row"><span class="grow s">ADR-Karte gültig bis</span>
+      <div class="row"><span class="grow s">{{ tr('drivers.adr_card_valid_until') }}</span>
         <span class="badge tone-{{ ampel_tone(m.adr_karte_ablauf) }}">{{ m.adr_karte_ablauf|datum }}</span></div>
-      <div class="row"><span class="grow s">Urlaubstage pro Jahr</span><span class="t">{{ m.urlaubstage_kontingent }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('drivers.vacation_days_per_year') }}</span><span class="t">{{ m.urlaubstage_kontingent }}</span></div>
     </div>
     <form method="post" action="/mitarbeiter/{{ m.id }}/karten" class="no-print"
           style="margin-top:10px;display:flex;gap:8px;align-items:end;flex-wrap:wrap">
       <div>
-        <label for="fahrerkarte_ablauf" style="margin-top:0">Fahrerkarte</label>
+        <label for="fahrerkarte_ablauf" style="margin-top:0">{{ tr('drivers.driver_card') }}</label>
         <input id="fahrerkarte_ablauf" name="fahrerkarte_ablauf" type="date"
                value="{{ m.fahrerkarte_ablauf.isoformat() if m.fahrerkarte_ablauf }}">
       </div>
       <div>
-        <label for="adr_karte_ablauf" style="margin-top:0">ADR-Karte</label>
+        <label for="adr_karte_ablauf" style="margin-top:0">{{ tr('drivers.adr_card') }}</label>
         <input id="adr_karte_ablauf" name="adr_karte_ablauf" type="date"
                value="{{ m.adr_karte_ablauf.isoformat() if m.adr_karte_ablauf }}">
       </div>
       <div style="max-width:110px">
-        <label for="urlaubstage_kontingent" style="margin-top:0">Urlaubstage</label>
+        <label for="urlaubstage_kontingent" style="margin-top:0">{{ tr('drivers.vacation_days_per_year') }}</label>
         <input id="urlaubstage_kontingent" name="urlaubstage_kontingent" type="number" min="0"
                value="{{ m.urlaubstage_kontingent }}">
       </div>
-      <button class="btn ghost sm" type="submit">Speichern</button>
+      <button class="btn ghost sm" type="submit">{{ tr('drivers.save') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>🌴 Urlaub & Krankheit {{ jahr }}</h2>
+    <h2>{{ tr('drivers.vacation_sick_title', jahr=jahr) }}</h2>
     <div class="rowlist">
-      <div class="row"><span class="grow s">Urlaub genommen</span><span class="t">{{ urlaub_genommen }} von {{ m.urlaubstage_kontingent }} Tagen</span></div>
-      <div class="row"><span class="grow s">Resturlaub</span><span class="t">{{ resturlaub }} Tage</span></div>
-      <div class="row"><span class="grow s">Krankheitstage</span><span class="t">{{ krank_tage }}</span></div>
-      <div class="row"><span class="grow s">Arbeitsstunden diesen Monat</span><span class="t">{{ '%.1f'|format(stunden_monat) }} h</span></div>
+      <div class="row"><span class="grow s">{{ tr('drivers.vacation_taken') }}</span><span class="t">{{ urlaub_genommen }} {{ tr('drivers.of_days', total=m.urlaubstage_kontingent) }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('drivers.remaining_vacation_label') }}</span><span class="t">{{ resturlaub }} {{ tr('drivers.days') }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('drivers.sick_days') }}</span><span class="t">{{ krank_tage }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('drivers.work_hours_month') }}</span><span class="t">{{ '%.1f'|format(stunden_monat) }} h</span></div>
     </div>
     <form method="post" action="/mitarbeiter/{{ m.id }}/eintrag" class="no-print"
           style="margin-top:10px;display:flex;gap:8px;align-items:end;flex-wrap:wrap">
       <div>
-        <label for="art" style="margin-top:0">Art</label>
+        <label for="art" style="margin-top:0">{{ tr('drivers.type') }}</label>
         <select id="art" name="art" onchange="
           document.getElementById('feld-bis').style.display = this.value === 'urlaub' ? '' : 'none';
           document.getElementById('feld-stunden').style.display = this.value === 'stunden' ? '' : 'none';">
-          <option value="urlaub">Urlaub</option>
-          <option value="krank">Krankheit</option>
-          <option value="stunden">Arbeitsstunden</option>
+          <option value="urlaub">{{ tr('entry_art.urlaub') }}</option>
+          <option value="krank">{{ tr('entry_art.krank') }}</option>
+          <option value="stunden">{{ tr('entry_art.stunden') }}</option>
         </select>
       </div>
       <div>
-        <label for="datum" style="margin-top:0">Datum</label>
+        <label for="datum" style="margin-top:0">{{ tr('drivers.date') }}</label>
         <input id="datum" name="datum" type="date" required value="{{ today().isoformat() }}">
       </div>
       <div id="feld-bis">
-        <label for="bis" style="margin-top:0">Bis (einschl.)</label>
+        <label for="bis" style="margin-top:0">{{ tr('drivers.until_incl') }}</label>
         <input id="bis" name="bis" type="date">
       </div>
       <div id="feld-stunden" style="display:none;max-width:90px">
-        <label for="stunden" style="margin-top:0">Stunden</label>
+        <label for="stunden" style="margin-top:0">{{ tr('drivers.hours') }}</label>
         <input id="stunden" name="stunden" type="number" step="0.5" min="0">
       </div>
       <div style="flex:1;min-width:120px">
-        <label for="notiz" style="margin-top:0">Notiz</label>
-        <input id="notiz" name="notiz" placeholder="optional">
+        <label for="notiz" style="margin-top:0">{{ tr('drivers.note') }}</label>
+        <input id="notiz" name="notiz" placeholder="{{ tr('drivers.note_optional') }}">
       </div>
-      <button class="btn ghost sm" type="submit">Eintragen</button>
+      <button class="btn ghost sm" type="submit">{{ tr('drivers.enter') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>📒 Einträge <span class="count">{{ eintraege|length }}</span></h2>
+    <h2>{{ tr('drivers.entries_title') }} <span class="count">{{ eintraege|length }}</span></h2>
     <div class="rowlist">
       {% for e in eintraege %}
       <div class="row">
-        <span class="badge tone-{{ 'info' if e.art.value == 'urlaub' else ('warn' if e.art.value == 'krank' else 'muted') }}">{{ e.art_label }}</span>
+        <span class="badge tone-{{ 'info' if e.art.value == 'urlaub' else ('warn' if e.art.value == 'krank' else 'muted') }}">{{ tr('entry_art.' + e.art.value) }}</span>
         <div class="grow">
-          <div class="t">{{ e.datum|datum }}{% if e.bis %} – {{ e.bis|datum }} ({{ e.tage }} Tage){% endif %}{% if e.stunden is not none %} · {{ '%.1f'|format(e.stunden) }} h{% endif %}</div>
+          <div class="t">{{ e.datum|datum }}{% if e.bis %} – {{ e.bis|datum }} ({{ e.tage }} {{ tr('drivers.days') }}){% endif %}{% if e.stunden is not none %} · {{ '%.1f'|format(e.stunden) }} h{% endif %}</div>
           {% if e.notiz %}<div class="s">{{ e.notiz }}</div>{% endif %}
         </div>
         <form method="post" action="/mitarbeiter/{{ m.id }}/eintrag/{{ e.id }}/loeschen" class="no-print">
-          <button class="btn ghost sm" type="submit" title="Eintrag löschen">✕</button>
+          <button class="btn ghost sm" type="submit" title="{{ tr('drivers.delete_entry') }}">✕</button>
         </form>
       </div>
-      {% else %}<div class="empty">Noch keine Einträge.</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('drivers.no_entries_yet') }}</div>{% endfor %}
     </div>
   </div>
 
   <div class="card">
-    <h2>📄 Dokumente <span class="count">{{ dokumente|length }}</span></h2>
+    <h2>{{ tr('drivers.documents_title') }} <span class="count">{{ dokumente|length }}</span></h2>
     <div class="rowlist">
       {% for d in dokumente %}
       <div class="row">
@@ -190,28 +190,28 @@
         <a class="grow t" href="{{ d.pfad }}" target="_blank">{{ d.dateiname or d.pfad.split('/')[-1] }}</a>
         <span class="s">{{ d.created_at|datumzeit }}</span>
       </div>
-      {% else %}<div class="empty">Noch keine Dokumente (z.B. Arbeitsvertrag) hinterlegt.</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('drivers.no_documents_yet') }}</div>{% endfor %}
     </div>
     <form method="post" action="/mitarbeiter/{{ m.id }}/dokument" enctype="multipart/form-data"
           class="no-print" style="margin-top:10px;display:flex;gap:8px;align-items:end;flex-wrap:wrap">
       <div>
-        <label for="typ" style="margin-top:0">Typ</label>
+        <label for="typ" style="margin-top:0">{{ tr('drivers.doc_type') }}</label>
         <select id="typ" name="typ">
-          <option value="vertrag">Vertrag</option>
-          <option value="bescheinigung">Bescheinigung</option>
-          <option value="sonstiges">Sonstiges</option>
+          <option value="vertrag">{{ tr('drivers.doc_contract') }}</option>
+          <option value="bescheinigung">{{ tr('drivers.doc_certificate') }}</option>
+          <option value="sonstiges">{{ tr('drivers.doc_other') }}</option>
         </select>
       </div>
       <div style="flex:1;min-width:160px">
-        <label for="datei" style="margin-top:0">Datei (PDF oder Bild)</label>
+        <label for="datei" style="margin-top:0">{{ tr('export.file_pdf_image') }}</label>
         <input id="datei" name="datei" type="file" accept=".pdf,image/*" required>
       </div>
-      <button class="btn ghost sm" type="submit">Hochladen</button>
+      <button class="btn ghost sm" type="submit">{{ tr('export.upload') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>🗒️ Notizen <span class="count">{{ notizen|length }}</span></h2>
+    <h2>{{ tr('drivers.notes_title') }} <span class="count">{{ notizen|length }}</span></h2>
     <div class="rowlist">
       {% for n in notizen %}
       <div class="row">
@@ -220,15 +220,15 @@
           <div class="s">{{ n.ersteller.name }} · {{ n.created_at|datumzeit }}</div>
         </div>
       </div>
-      {% else %}<div class="empty">Noch keine Notizen zu diesem Mitarbeiter.</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('drivers.no_notes_yet') }}</div>{% endfor %}
     </div>
     <form method="post" action="/mitarbeiter/{{ m.id }}/notiz" class="no-print"
           style="margin-top:10px;display:flex;gap:8px;align-items:end">
       <div style="flex:1">
-        <label for="text" style="margin-top:0">Neue Notiz</label>
-        <input id="text" name="text" placeholder="z.B. Wunsch: keine Wochenendtouren" required>
+        <label for="text" style="margin-top:0">{{ tr('drivers.new_note') }}</label>
+        <input id="text" name="text" placeholder="{{ tr('drivers.note_placeholder') }}" required>
       </div>
-      <button class="btn ghost sm" type="submit">Speichern</button>
+      <button class="btn ghost sm" type="submit">{{ tr('drivers.save') }}</button>
     </form>
   </div>
 </div>

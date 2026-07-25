@@ -11,7 +11,6 @@ from app.models import (
     User, Role, UserStatus, Document, Note, PersonnelEntry, EntryArt,
     LeaveRequest, LeaveStatus,
 )
-from app.models.user import ROLE_LABELS
 from app.security import hash_password
 from app.services.uploads import save_upload
 from app.templating import templates
@@ -99,7 +98,7 @@ def detail(mitarbeiter_id: int, request: Request, user=Depends(require_mitarbeit
             "urlaub_genommen": urlaub_genommen, "krank_tage": krank_tage,
             "stunden_monat": stunden_monat, "jahr": jahr,
             "dokumente": dokumente, "notizen": notizen,
-            "rollen": [(r.value, label) for r, label in ROLE_LABELS.items()],
+            "rollen": [r.value for r in Role],
             "status_werte": [s.value for s in UserStatus],
         },
     )

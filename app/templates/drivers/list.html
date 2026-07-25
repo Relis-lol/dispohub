@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Mitarbeiter · DispoHub{% endblock %}
+{% block title %}{{ tr('drivers.title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Mitarbeiter</h1><span class="sub">{{ mitarbeiter|length }} Personen</span>
+<div class="page-head"><h1>{{ tr('drivers.title') }}</h1><span class="sub">{{ tr('drivers.count', n=mitarbeiter|length) }}</span>
   <div class="spacer"></div>
-  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">{{ tr('common.print') }}</button>
 </div>
 {% if offene_antraege %}
 <div class="card" style="margin-bottom:16px">
-  <h2>🌴 Offene Urlaubsanträge <span class="count">{{ offene_antraege|length }}</span></h2>
+  <h2>{{ tr('drivers.open_requests_title') }} <span class="count">{{ offene_antraege|length }}</span></h2>
   <div class="rowlist">
     {% for a in offene_antraege %}
     <div class="row">
       <div class="grow">
         <div class="t"><a href="/mitarbeiter/{{ a.user.id }}">{{ a.user.name }}</a>
-          · {{ a.von|datum }} – {{ a.bis|datum }} ({{ a.tage }} Tage)</div>
+          · {{ a.von|datum }} – {{ a.bis|datum }} ({{ a.tage }} {{ tr('drivers.days') }})</div>
         <div class="s">
           {% if a.notiz %}{{ a.notiz }} · {% endif %}
-          Resturlaub: {{ resturlaub[a.user_id] }} Tage
-          {% if a.tage > resturlaub[a.user_id] %}<span class="badge tone-bad">reicht nicht!</span>{% endif %}
+          {{ tr('drivers.remaining_vacation', n=resturlaub[a.user_id]) }}
+          {% if a.tage > resturlaub[a.user_id] %}<span class="badge tone-bad">{{ tr('drivers.not_enough') }}</span>{% endif %}
         </div>
       </div>
       <form method="post" action="/urlaub/{{ a.id }}/genehmigen" class="no-print">
-        <button class="btn sm ok" type="submit">✓ Genehmigen</button>
+        <button class="btn sm ok" type="submit">{{ tr('drivers.approve') }}</button>
       </form>
       <form method="post" action="/urlaub/{{ a.id }}/ablehnen" class="no-print"
-            onsubmit="return confirm('Antrag von {{ a.user.name }} ablehnen?')">
-        <button class="btn ghost sm" type="submit">✕ Ablehnen</button>
+            onsubmit="return confirm('{{ tr('drivers.confirm_reject', name=a.user.name) }}')">
+        <button class="btn ghost sm" type="submit">{{ tr('drivers.reject') }}</button>
       </form>
     </div>
     {% endfor %}
@@ -36,22 +36,22 @@
 <div class="card">
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>Name</th><th>Rolle</th><th>Kontakt</th><th>Fahrzeug</th><th>Geburtstag</th><th>Status</th></tr></thead>
+    <thead><tr><th>{{ tr('drivers.col_name') }}</th><th>{{ tr('drivers.col_role') }}</th><th>{{ tr('drivers.col_contact') }}</th><th>{{ tr('drivers.col_vehicle') }}</th><th>{{ tr('drivers.col_birthday') }}</th><th>{{ tr('drivers.col_status') }}</th></tr></thead>
     <tbody>
     {% for m in mitarbeiter %}
       <tr>
         <td><a href="/mitarbeiter/{{ m.id }}"><strong>{{ m.name }}</strong></a></td>
-        <td>{{ m.role_label }}</td>
+        <td>{{ tr('role.' + m.role.value) }}</td>
         <td class="muted">{{ m.phone or m.email }}</td>
         <td>{% if m.vehicle %}<a href="/fahrzeuge/{{ m.vehicle.id }}">{{ m.vehicle.kennzeichen }}</a>{% else %}—{% endif %}</td>
         <td>
           {% if m.geburtstag %}
             {{ m.geburtstag.strftime('%d.%m.') }}
             {% set tb = tage_bis_geburtstag(m.geburtstag) %}
-            {% if tb is not none and tb <= 14 %}<span class="badge tone-warn">in {{ tb }} T</span>{% endif %}
+            {% if tb is not none and tb <= 14 %}<span class="badge tone-warn">{{ tr('drivers.in_days', n=tb) }}</span>{% endif %}
           {% else %}—{% endif %}
         </td>
-        <td><span class="badge tone-{{ 'ok' if m.status.value == 'aktiv' else 'muted' }}">{{ m.status.value }}</span></td>
+        <td><span class="badge tone-{{ 'ok' if m.status.value == 'aktiv' else 'muted' }}">{{ tr('user_status.' + m.status.value) }}</span></td>
       </tr>
     {% endfor %}
     </tbody>

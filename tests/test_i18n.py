@@ -50,9 +50,10 @@ def test_fahrer_ansicht_uebersetzt_und_nicht_kaputt(client):
     assert "Сообщить" in r.text or "повреждении" in r.text
 
 
-def test_office_seiten_bleiben_deutsch(client):
-    """Büro/GF-Seiten sind (noch) nicht übersetzt — Standardverhalten bleibt Deutsch."""
+def test_office_seiten_werden_schrittweise_uebersetzt(client):
+    """Büro-Seiten übernehmen zunehmend die gewählte Sprache (Personalakte bereits übersetzt)."""
     login(client, "buero@dispohub.example", "buero123")
     client.cookies.set("fh_lang", "en")
     r = client.get("/mitarbeiter")
-    assert "Mitarbeiter" in r.text
+    assert "Employees" in r.text
+    assert "Mitarbeiter" not in r.text
