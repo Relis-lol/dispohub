@@ -102,13 +102,24 @@ forced first-login password changes, role-based access control.
 
 ## Screenshots
 
-Screenshots (dashboard, a vehicle record, the driver mobile chat view, and
-the calendar grid — all with fictional demo data, no real company
-information) are planned but not yet included in this release; see
-[`docs/screenshots/`](docs/screenshots/) for what's needed and how to add
-them. Until then, the fastest way to see the app is the
-[quick start](#quick-start-docker) below — it's running in a couple of
-minutes with realistic demo data pre-loaded.
+*All data shown is the built-in fictional demo data — no real company,
+driver, or vehicle information.*
+
+| Dashboard | Vehicles |
+|---|---|
+| ![Management dashboard](docs/screenshots/dashboard.png) | ![Vehicle list](docs/screenshots/vehicles.png) |
+
+| Calendar grid | Tasks (office) |
+|---|---|
+| ![Month calendar grid](docs/screenshots/calendar.png) | ![Office task list](docs/screenshots/tasks.png) |
+
+| Driver chat (mobile, English) | Driver report tab (mobile, English) |
+|---|---|
+| ![Driver mobile chat view](docs/screenshots/driver-chat.png) | ![Driver damage/parking/vacation report view](docs/screenshots/driver-report.png) |
+
+| Driver tasks (mobile, English) | Printable forms |
+|---|---|
+| ![Driver mobile task list](docs/screenshots/driver-tasks.png) | ![Printable forms overview](docs/screenshots/forms.png) |
 
 ## Architecture
 
