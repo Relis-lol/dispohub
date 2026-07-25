@@ -1,0 +1,47 @@
+name: Translation correction
+description: Report incorrect or awkward wording in a non-German language
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The Czech, English, Russian, Polish, and Turkish translations were
+        AI-generated and have not been reviewed by native speakers — reports
+        like this one are genuinely useful. Thank you!
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - Czech
+        - English
+        - Russian
+        - Polish
+        - Turkish
+    validations:
+      required: true
+  - type: input
+    id: key
+    attributes:
+      label: Translation key (if known)
+      description: See app/i18n/translations.py — e.g. "report.damage_title"
+    validations:
+      required: false
+  - type: input
+    id: current
+    attributes:
+      label: Current text
+    validations:
+      required: true
+  - type: input
+    id: suggested
+    attributes:
+      label: Suggested text
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is the current text wrong or awkward?
+    validations:
+      required: false
