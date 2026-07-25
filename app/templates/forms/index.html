@@ -1,81 +1,80 @@
 {% extends "base.html" %}
-{% block title %}Vordrucke · DispoHub{% endblock %}
+{% block title %}{{ tr('forms.title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Vordrucke</h1>
-  <span class="sub">Druckfertige Formulare — Name/Monat wählen, drucken, fertig</span>
+<div class="page-head"><h1>{{ tr('forms.title') }}</h1>
+  <span class="sub">{{ tr('forms.subtitle') }}</span>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>🕐 Arbeitszeitnachweis</h2>
-    <p class="muted" style="margin-top:0">Monatsliste: Tag, Von/Bis, Pause, Stunden, Unterschrift.</p>
+    <h2>{{ tr('forms.timesheet_title') }}</h2>
+    <p class="muted" style="margin-top:0">{{ tr('forms.timesheet_hint') }}</p>
     <form method="get" action="/vordrucke/arbeitszeit" target="_blank"
           style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
       <div style="flex:1;min-width:150px">
-        <label for="az-ma" style="margin-top:0">Mitarbeiter</label>
+        <label for="az-ma" style="margin-top:0">{{ tr('forms.employee') }}</label>
         <select id="az-ma" name="mitarbeiter_id">
-          <option value="">— leer lassen —</option>
+          <option value="">{{ tr('forms.leave_blank') }}</option>
           {% for p in mitarbeiter %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
         </select>
       </div>
       <div>
-        <label for="az-monat" style="margin-top:0">Monat</label>
+        <label for="az-monat" style="margin-top:0">{{ tr('forms.month') }}</label>
         <input id="az-monat" name="monat" type="month" value="{{ monat_default }}">
       </div>
-      <button class="btn ghost sm" type="submit">Öffnen</button>
+      <button class="btn ghost sm" type="submit">{{ tr('forms.open') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>⛽ Tankliste</h2>
-    <p class="muted" style="margin-top:0">Je Fahrzeug: Tag, km, Diesel/AdBlue-Liter, Tankstelle, Unterschrift.</p>
+    <h2>{{ tr('forms.fuellist_title') }}</h2>
+    <p class="muted" style="margin-top:0">{{ tr('forms.fuellist_hint') }}</p>
     <form method="get" action="/vordrucke/tankliste" target="_blank"
           style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
       <div style="flex:1;min-width:150px">
-        <label for="tl-fz" style="margin-top:0">Fahrzeug</label>
+        <label for="tl-fz" style="margin-top:0">{{ tr('drivers.col_vehicle') }}</label>
         <select id="tl-fz" name="vehicle_id">
-          <option value="">— leer lassen —</option>
+          <option value="">{{ tr('forms.leave_blank') }}</option>
           {% for v in fahrzeuge %}<option value="{{ v.id }}">{{ v.kennzeichen }}</option>{% endfor %}
         </select>
       </div>
       <div>
-        <label for="tl-monat" style="margin-top:0">Monat</label>
+        <label for="tl-monat" style="margin-top:0">{{ tr('forms.month') }}</label>
         <input id="tl-monat" name="monat" type="month" value="{{ monat_default }}">
       </div>
-      <button class="btn ghost sm" type="submit">Öffnen</button>
+      <button class="btn ghost sm" type="submit">{{ tr('forms.open') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>🌴 Urlaubsantrag (Papierform)</h2>
-    <p class="muted" style="margin-top:0">Klassischer Antrag zum Ausfüllen und Unterschreiben.</p>
+    <h2>{{ tr('forms.vacation_request_title') }}</h2>
+    <p class="muted" style="margin-top:0">{{ tr('forms.vacation_request_hint') }}</p>
     <form method="get" action="/vordrucke/urlaubsantrag" target="_blank"
           style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
       <div style="flex:1;min-width:150px">
-        <label for="ua-ma" style="margin-top:0">Mitarbeiter</label>
+        <label for="ua-ma" style="margin-top:0">{{ tr('forms.employee') }}</label>
         <select id="ua-ma" name="mitarbeiter_id">
-          <option value="">— leer lassen —</option>
+          <option value="">{{ tr('forms.leave_blank') }}</option>
           {% for p in mitarbeiter %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
         </select>
       </div>
-      <button class="btn ghost sm" type="submit">Öffnen</button>
+      <button class="btn ghost sm" type="submit">{{ tr('forms.open') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>✅ Urlaubsbestätigung</h2>
-    <p class="muted" style="margin-top:0">Bestätigt nach dem Urlaub, dass der Mitarbeiter von–bis nicht
-      im Betrieb tätig war. Wird aus einem genehmigten Antrag erzeugt.</p>
+    <h2>{{ tr('forms.vacation_confirmation_title') }}</h2>
+    <p class="muted" style="margin-top:0">{{ tr('forms.vacation_confirmation_hint') }}</p>
     <div class="rowlist">
       {% for a in genehmigte %}
       <div class="row">
         <div class="grow">
           <div class="t">{{ a.user.name }}</div>
-          <div class="s">{{ a.von|datum }} – {{ a.bis|datum }} ({{ a.tage }} Tage)</div>
+          <div class="s">{{ a.von|datum }} – {{ a.bis|datum }} ({{ a.tage }} {{ tr('drivers.days') }})</div>
         </div>
-        <a class="btn ghost sm" href="/vordrucke/urlaubsbestaetigung/{{ a.id }}" target="_blank">Öffnen</a>
+        <a class="btn ghost sm" href="/vordrucke/urlaubsbestaetigung/{{ a.id }}" target="_blank">{{ tr('forms.open') }}</a>
       </div>
-      {% else %}<div class="empty">Noch keine genehmigten Urlaubsanträge.</div>{% endfor %}
+      {% else %}<div class="empty">{{ tr('forms.no_approved_requests_yet') }}</div>{% endfor %}
     </div>
   </div>
 </div>

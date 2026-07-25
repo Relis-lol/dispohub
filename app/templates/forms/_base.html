@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,8 +27,8 @@
 </head>
 <body>
   <div class="toolbar no-print">
-    <a href="/vordrucke" class="btn ghost sm">← Vordrucke</a>
-    <button type="button" class="btn sm" onclick="window.print()">🖨️ Drucken / Als PDF speichern</button>
+    <a href="/vordrucke" class="btn ghost sm">{{ tr('forms.back_forms') }}</a>
+    <button type="button" class="btn sm" onclick="window.print()">{{ tr('forms.print_or_pdf') }}</button>
   </div>
   <div class="sheet">
     <div class="sheet-head">
