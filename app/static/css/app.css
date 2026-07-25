@@ -417,3 +417,5 @@ body.has-tabbar .mobile-main { flex: 1; overflow-y: auto; }
 .mobilebar-actions .lang-switch { display: contents; }
 .mobilebar-actions .lang-flag { font-size: 16px; padding: 2px 3px; opacity: .8; }
 .mobilebar-actions .lang-flag.active { opacity: 1; }
+.sidebar .lang-switch { justify-content: flex-start; margin: 0 0 14px; padding: 0 8px; }
+.sidebar .lang-flag { font-size: 17px; padding: 3px 5px; }

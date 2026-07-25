@@ -9,64 +9,65 @@
   {% else %}
   <div class="brand">Dispo<span>Hub</span></div>
   {% endif %}
+  {% include "partials/lang_switcher.html" %}
   <nav class="nav">
     {% if user and user.role.value == 'it' %}
     <a href="/it" class="{{ 'active' if active == 'it' }}">
-      <span class="ico">🖥️</span><span class="lbl">IT-Bereich</span></a>
+      <span class="ico">🖥️</span><span class="lbl">{{ tr('nav.it_area') }}</span></a>
     {% else %}
     <a href="/" class="{{ 'active' if active == 'dashboard' }}">
-      <span class="ico">🏠</span><span class="lbl">Dashboard</span></a>
+      <span class="ico">🏠</span><span class="lbl">{{ tr('nav.dashboard') }}</span></a>
     <a href="/schaeden" class="{{ 'active' if active == 'schaeden' }}">
-      <span class="ico">🛠️</span><span class="lbl">Schäden</span>
+      <span class="ico">🛠️</span><span class="lbl">{{ tr('nav.damages') }}</span>
       {% if neue_meldungen %}<span class="badge tone-bad">{{ neue_meldungen|length }}</span>{% endif %}
     </a>
     <a href="/fahrzeuge" class="{{ 'active' if active == 'fahrzeuge' }}">
-      <span class="ico">🚐</span><span class="lbl">Fahrzeuge</span></a>
+      <span class="ico">🚐</span><span class="lbl">{{ tr('nav.vehicles') }}</span></a>
     <a href="/kalender" class="{{ 'active' if active == 'kalender' }}">
-      <span class="ico">📅</span><span class="lbl">Kalender</span></a>
+      <span class="ico">📅</span><span class="lbl">{{ tr('nav.calendar') }}</span></a>
     <a href="/chat" class="{{ 'active' if active == 'chat' }}">
-      <span class="ico">💬</span><span class="lbl">Chat</span>
+      <span class="ico">💬</span><span class="lbl">{{ tr('nav.chat') }}</span>
       {% set cu = nav_chat_unread(user) %}
       {% if cu %}<span class="badge tone-bad">{{ cu }}</span>{% endif %}
     </a>
     <a href="/rechnungen" class="{{ 'active' if active == 'rechnungen' }}">
-      <span class="ico">📨</span><span class="lbl">Rechnungen</span></a>
+      <span class="ico">📨</span><span class="lbl">{{ tr('nav.invoices') }}</span></a>
     <a href="/kosten" class="{{ 'active' if active == 'kosten' }}">
-      <span class="ico">💶</span><span class="lbl">Kosten</span></a>
+      <span class="ico">💶</span><span class="lbl">{{ tr('nav.costs') }}</span></a>
     <a href="/tankkarten" class="{{ 'active' if active == 'tankkarten' }}">
-      <span class="ico">⛽</span><span class="lbl">Tankkarten</span></a>
+      <span class="ico">⛽</span><span class="lbl">{{ tr('nav.fuelcards') }}</span></a>
     <a href="/export" class="{{ 'active' if active == 'export' }}">
-      <span class="ico">📑</span><span class="lbl">Steuer-Export</span></a>
+      <span class="ico">📑</span><span class="lbl">{{ tr('nav.export') }}</span></a>
     <a href="/mitarbeiter" class="{{ 'active' if active == 'mitarbeiter' }}">
-      <span class="ico">👥</span><span class="lbl">Mitarbeiter</span></a>
+      <span class="ico">👥</span><span class="lbl">{{ tr('nav.employees') }}</span></a>
     <a href="/aufgaben" class="{{ 'active' if active == 'aufgaben' }}">
-      <span class="ico">📋</span><span class="lbl">Aufgaben</span></a>
+      <span class="ico">📋</span><span class="lbl">{{ tr('nav.tasks') }}</span></a>
     <a href="/umfragen" class="{{ 'active' if active == 'umfragen' }}">
-      <span class="ico">📊</span><span class="lbl">Umfragen</span></a>
+      <span class="ico">📊</span><span class="lbl">{{ tr('nav.polls') }}</span></a>
     <a href="/vordrucke" class="{{ 'active' if active == 'vordrucke' }}">
-      <span class="ico">🖨️</span><span class="lbl">Vordrucke</span></a>
+      <span class="ico">🖨️</span><span class="lbl">{{ tr('nav.forms') }}</span></a>
     <a href="/notizen" class="{{ 'active' if active == 'notizen' }}">
-      <span class="ico">📝</span><span class="lbl">Notizen</span></a>
+      <span class="ico">📝</span><span class="lbl">{{ tr('nav.notes') }}</span></a>
     {% if user and user.role.value in ['admin', 'geschaeftsfuehrung'] %}
     <a href="/verwaltung" class="{{ 'active' if active == 'verwaltung' }}">
-      <span class="ico">🧰</span><span class="lbl">Verwaltung</span></a>
+      <span class="ico">🧰</span><span class="lbl">{{ tr('nav.administration') }}</span></a>
     <a href="/einstellungen/rechte" class="{{ 'active' if active == 'einstellungen' }}">
-      <span class="ico">⚙️</span><span class="lbl">Einstellungen</span></a>
+      <span class="ico">⚙️</span><span class="lbl">{{ tr('nav.settings') }}</span></a>
     {% endif %}
     {% endif %}
   </nav>
   <div class="sidebar-foot">
-    {% if user %}<div class="who">{{ user.name }}<br><span class="muted">{{ user.role_label }}</span></div>{% endif %}
+    {% if user %}<div class="who">{{ user.name }}<br><span class="muted">{{ tr('role.' + user.role.value) }}</span></div>{% endif %}
     <button type="button" class="btn ghost sm block" onclick="fhRequestNotificationPermission()">
-      <span class="notify-toggle-label">🔕</span> Benachrichtigungen
+      <span class="notify-toggle-label">🔕</span> {{ tr('nav.notifications') }}
     </button>
     <div style="height:6px"></div>
     <button type="button" class="btn ghost sm block" onclick="fhToggleTheme()">
-      <span class="theme-toggle-label">🌙</span> Hell/Dunkel
+      <span class="theme-toggle-label">🌙</span> {{ tr('nav.theme') }}
     </button>
     <div style="height:6px"></div>
-    <a href="/passwort" class="btn ghost sm block">🔑 Passwort ändern</a>
+    <a href="/passwort" class="btn ghost sm block">🔑 {{ tr('nav.password') }}</a>
     <div style="height:6px"></div>
-    <a href="/logout" class="btn ghost sm block">Abmelden</a>
+    <a href="/logout" class="btn ghost sm block">{{ tr('nav.logout') }}</a>
   </div>
 </aside>

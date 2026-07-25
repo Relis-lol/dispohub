@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Chat · DispoHub{% endblock %}
+{% block title %}{{ tr('nav.chat') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Chat</h1></div>
+<div class="page-head"><h1>{{ tr('nav.chat') }}</h1></div>
 
 <div class="chat-wrap">
   <aside class="chat-threads">
@@ -9,13 +9,13 @@
     {% set direkt = threads|selectattr('art.value', 'equalto', 'direkt')|list %}
 
     {% if gruppen %}
-    <div class="thread-section">Gruppen</div>
+    <div class="thread-section">{{ tr('chat.groups') }}</div>
     {% for th in gruppen %}
     <a href="/chat/{{ th.id }}" class="thread {{ 'active' if t and th.id == t.id }}">
       <span class="ico">👥</span>
       <span class="grow">
         <span class="tname">{{ th.anzeige_name(user) }}</span>
-        {% if th.messages %}<span class="tprev">{{ ('🚫 Nachricht gelöscht' if th.messages[-1].geloescht else (th.messages[-1].text or '📷 Bild'))|truncate(30) }}</span>{% endif %}
+        {% if th.messages %}<span class="tprev">{{ (tr('chat.deleted') if th.messages[-1].geloescht else (th.messages[-1].text or tr('chat.photo_short')))|truncate(30) }}</span>{% endif %}
       </span>
       {% if unread.get(th.id) %}<span class="badge tone-bad">{{ unread[th.id] }}</span>{% endif %}
     </a>
@@ -23,27 +23,27 @@
     {% endif %}
 
     {% if direkt %}
-    <div class="thread-section">Fahrer anschreiben</div>
+    <div class="thread-section">{{ tr('chat.direct_drivers') }}</div>
     {% for th in direkt %}
     <a href="/chat/{{ th.id }}" class="thread {{ 'active' if t and th.id == t.id }}">
       <span class="ico">👤</span>
       <span class="grow">
         <span class="tname">{{ th.anzeige_name(user) }}</span>
-        {% if th.messages %}<span class="tprev">{{ ('🚫 Nachricht gelöscht' if th.messages[-1].geloescht else (th.messages[-1].text or '📷 Bild'))|truncate(30) }}</span>{% endif %}
+        {% if th.messages %}<span class="tprev">{{ (tr('chat.deleted') if th.messages[-1].geloescht else (th.messages[-1].text or tr('chat.photo_short')))|truncate(30) }}</span>{% endif %}
       </span>
       {% if unread.get(th.id) %}<span class="badge tone-bad">{{ unread[th.id] }}</span>{% endif %}
     </a>
     {% endfor %}
     {% endif %}
 
-    {% if not threads %}<div class="empty">Keine Unterhaltungen.</div>{% endif %}
+    {% if not threads %}<div class="empty">{{ tr('chat.empty_threads') }}</div>{% endif %}
   </aside>
 
   <section class="chat-main">
     {% if t %}
       {% include "chat/_conversation.html" %}
     {% else %}
-      <div class="empty" style="margin:auto">Wähle links eine Unterhaltung.</div>
+      <div class="empty" style="margin:auto">{{ tr('chat.select_conversation') }}</div>
     {% endif %}
   </section>
 </div>
