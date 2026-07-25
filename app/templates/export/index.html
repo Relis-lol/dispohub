@@ -1,36 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Steuer-Export · DispoHub{% endblock %}
+{% block title %}{{ tr('export.title') }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Steuerberater-Export</h1>
-  <span class="sub">Monat {{ monat }}</span>
+  <h1>{{ tr('export.title') }}</h1>
+  <span class="sub">{{ tr('export.month', monat=monat) }}</span>
   <div class="spacer"></div>
-  <a href="/export/pdf" class="btn ghost">📑 PDF-Bericht</a>
-  <a href="/export/csv" class="btn">⬇ CSV exportieren</a>
+  <a href="/export/pdf" class="btn ghost">{{ tr('export.pdf_report') }}</a>
+  <a href="/export/csv" class="btn">{{ tr('export.export_csv') }}</a>
 </div>
 
 <div class="grid cols-3" style="margin-bottom:16px">
-  <div class="card stat big"><span class="lbl">Geprüfte Rechnungen</span><span class="num">{{ geprueft|length }}</span></div>
-  <div class="card stat big"><span class="lbl">Summe</span><span class="num">{{ summe|euro }}</span></div>
-  <div class="card stat big"><span class="lbl">Noch ungeklärt</span>
+  <div class="card stat big"><span class="lbl">{{ tr('export.reviewed_invoices') }}</span><span class="num">{{ geprueft|length }}</span></div>
+  <div class="card stat big"><span class="lbl">{{ tr('export.sum') }}</span><span class="num">{{ summe|euro }}</span></div>
+  <div class="card stat big"><span class="lbl">{{ tr('export.still_unresolved') }}</span>
     <span class="num" style="color:var(--bad-fg)">{{ ungeklaert|length }}</span></div>
 </div>
 
 <div class="card" style="margin-bottom:16px">
-  <h2>📥 Filedrop für den Steuerberater <span class="count">{{ belege_offen|length }}</span></h2>
-  <p class="muted" style="margin-top:0">Rohe Belege (Quittungen, Scans) einfach hochladen, ohne
-    jeden einzeln über die Rechnungs-Inbox zu erfassen. Der Steuerberater sammelt sie hier ein.</p>
+  <h2>{{ tr('export.filedrop_title') }} <span class="count">{{ belege_offen|length }}</span></h2>
+  <p class="muted" style="margin-top:0">{{ tr('export.filedrop_hint') }}</p>
   <form method="post" action="/export/beleg" enctype="multipart/form-data"
         style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
     <div style="flex:1;min-width:180px">
-      <label for="beleg-datei" style="margin-top:0">Datei (PDF oder Bild)</label>
+      <label for="beleg-datei" style="margin-top:0">{{ tr('export.file_pdf_image') }}</label>
       <input id="beleg-datei" name="datei" type="file" accept=".pdf,image/*" required>
     </div>
     <div style="flex:1;min-width:160px">
-      <label for="beleg-notiz" style="margin-top:0">Notiz (optional)</label>
+      <label for="beleg-notiz" style="margin-top:0">{{ tr('export.note_optional') }}</label>
       <input id="beleg-notiz" name="notiz" placeholder="z.B. Tankquittung Mai">
     </div>
-    <button class="btn ghost sm" type="submit">Hochladen</button>
+    <button class="btn ghost sm" type="submit">{{ tr('export.upload') }}</button>
   </form>
   <div class="rowlist" style="margin-top:10px">
     {% for b in belege_offen %}
@@ -38,18 +37,18 @@
       <a class="grow t" href="{{ b.pfad }}" target="_blank">{{ b.dateiname or b.pfad.split('/')[-1] }}</a>
       <span class="s">{{ b.notiz or '' }} · {{ b.created_at|datumzeit }}</span>
       <form method="post" action="/export/beleg/{{ b.id }}/abgeholt" class="no-print">
-        <button class="btn ghost sm" type="submit">✓ Abgeholt</button>
+        <button class="btn ghost sm" type="submit">{{ tr('export.picked_up') }}</button>
       </form>
       <form method="post" action="/export/beleg/{{ b.id }}/loeschen" class="no-print"
-            onsubmit="return confirm('Beleg endgültig löschen?')">
+            onsubmit="return confirm('{{ tr('export.confirm_delete_receipt') }}')">
         <button class="btn ghost sm" type="submit">🗑️</button>
       </form>
     </div>
-    {% else %}<div class="empty">Keine offenen Belege im Filedrop.</div>{% endfor %}
+    {% else %}<div class="empty">{{ tr('export.no_open_receipts') }}</div>{% endfor %}
   </div>
   {% if belege_abgeholt %}
   <details class="kulli-details no-print" style="margin-top:10px">
-    <summary>Bereits abgeholte Belege ({{ belege_abgeholt|length }})</summary>
+    <summary>{{ tr('export.already_picked_up', n=belege_abgeholt|length) }}</summary>
     <div class="rowlist">
       {% for b in belege_abgeholt %}
       <div class="row">
@@ -64,13 +63,13 @@
 
 {% if ungeklaert %}
 <div class="card" style="margin-bottom:16px">
-  <h2>⚠ Ungeklärte / offene Belege – nicht im Export</h2>
+  <h2>{{ tr('export.unresolved_title') }}</h2>
   <div class="rowlist">
     {% for i in ungeklaert %}
     <div class="row">
       <div class="grow"><div class="t"><a href="/rechnungen/{{ i.id }}">{{ i.betreff }}</a></div>
         <div class="s">{{ i.absender }}</div></div>
-      <span class="badge tone-{{ i.status_tone }}">{{ i.status_label }}</span>
+      <span class="badge tone-{{ i.status_tone }}">{{ tr('invoice_status.' + i.status.value) }}</span>
     </div>
     {% endfor %}
   </div>
@@ -78,22 +77,22 @@
 {% endif %}
 
 <div class="card">
-  <h2>Im Export enthalten ({{ monat }})</h2>
+  <h2>{{ tr('export.included_title', monat=monat) }}</h2>
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>Datum</th><th>Nr.</th><th>Absender</th><th>Kategorie</th><th>Fahrzeug</th><th class="num">Betrag</th></tr></thead>
+    <thead><tr><th>{{ tr('costs.col_date') }}</th><th>{{ tr('export.col_number') }}</th><th>{{ tr('export.col_sender') }}</th><th>{{ tr('costs.col_category') }}</th><th>{{ tr('costs.col_vehicle') }}</th><th class="num">{{ tr('costs.col_amount') }}</th></tr></thead>
     <tbody>
     {% for i in geprueft %}
       <tr>
         <td>{{ i.rechnungsdatum|datum }}</td>
         <td>{{ i.rechnungsnummer or '—' }}</td>
         <td>{{ i.absender }}</td>
-        <td>{{ i.kategorie.value if i.kategorie else '—' }}</td>
-        <td>{{ i.vehicle.kennzeichen if i.vehicle else 'Allgemein' }}</td>
+        <td>{{ tr('cost_category.' + i.kategorie.value) if i.kategorie else '—' }}</td>
+        <td>{{ i.vehicle.kennzeichen if i.vehicle else tr('dashboard.general') }}</td>
         <td class="num">{{ i.betrag|euro }}</td>
       </tr>
     {% else %}
-      <tr><td colspan="6" class="empty">Noch keine geprüften Rechnungen in diesem Monat.</td></tr>
+      <tr><td colspan="6" class="empty">{{ tr('export.no_reviewed_yet') }}</td></tr>
     {% endfor %}
     </tbody>
   </table>
