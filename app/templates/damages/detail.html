@@ -1,22 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Schaden {{ d.vehicle.kennzeichen }} · DispoHub{% endblock %}
+{% block title %}{{ tr('damages.detail_title', kennzeichen=d.vehicle.kennzeichen) }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Schaden · {{ d.vehicle.kennzeichen }}</h1>
+  <h1>{{ tr('damages.detail_title', kennzeichen=d.vehicle.kennzeichen) }}</h1>
   <div class="spacer"></div>
-  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
-  <a href="/schaeden" class="btn ghost sm no-print">← Posteingang</a>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">{{ tr('common.print') }}</button>
+  <a href="/schaeden" class="btn ghost sm no-print">{{ tr('damages.back_inbox') }}</a>
 </div>
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>Meldung</h2>
+    <h2>{{ tr('damages.report_title') }}</h2>
     <div class="rowlist">
-      <div class="row"><span class="grow s">Fahrzeug</span>
+      <div class="row"><span class="grow s">{{ tr('damages.vehicle') }}</span>
         <a class="t" href="/fahrzeuge/{{ d.vehicle.id }}">{{ d.vehicle.kennzeichen }}</a></div>
-      <div class="row"><span class="grow s">Gemeldet von</span><span class="t">{{ d.reporter.name if d.reporter else '—' }}</span></div>
-      <div class="row"><span class="grow s">Datum</span><span class="t">{{ d.created_at.strftime('%d.%m.%Y %H:%M') }}</span></div>
-      <div class="row"><span class="grow s">Priorität</span><span class="badge tone-{{ d.priority_tone }}">{{ d.priority_label }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('damages.reported_by_label') }}</span><span class="t">{{ d.reporter.name if d.reporter else '—' }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('damages.date') }}</span><span class="t">{{ d.created_at.strftime('%d.%m.%Y %H:%M') }}</span></div>
+      <div class="row"><span class="grow s">{{ tr('damages.priority') }}</span><span class="badge tone-{{ d.priority_tone }}">{{ tr('priority.' + d.prioritaet.value) }}</span></div>
     </div>
     <p style="margin:12px 0 0">{{ d.beschreibung }}</p>
     {% if d.nachricht_an_gf %}<p class="muted" style="margin-top:8px">✉️ {{ d.nachricht_an_gf }}</p>{% endif %}

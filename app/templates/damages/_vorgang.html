@@ -1,9 +1,9 @@
 <div class="card">
-  <h2>Vorgang <span class="count"><span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else ('ok' if d.status.value == 'erledigt' else 'info') }}">{{ d.status_label }}</span></span></h2>
+  <h2>{{ tr('damages.case_title') }} <span class="count"><span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else ('ok' if d.status.value == 'erledigt' else 'info') }}">{{ tr('damage_status.' + d.status.value) }}</span></span></h2>
 
   <!-- Statusverlauf -->
   <div class="rowlist" style="margin-bottom:10px">
-    {% set steps = [('gemeldet','Gemeldet'),('uebernommen','Übernommen'),('in_reparatur','In Reparatur'),('erledigt','Erledigt')] %}
+    {% set steps = [('gemeldet', tr('damages.step_reported')),('uebernommen', tr('damages.step_accepted')),('in_reparatur', tr('damages.step_in_repair')),('erledigt', tr('damages.step_done'))] %}
     {% set order = {'gemeldet':0,'uebernommen':1,'in_reparatur':2,'erledigt':3} %}
     <div class="row" style="border:none;gap:6px;flex-wrap:wrap">
       {% for key, label in steps %}
@@ -15,41 +15,41 @@
 
   {% if d.status.value == 'gemeldet' %}
   <form class="no-print" hx-post="/schaeden/{{ d.id }}/uebernehmen" hx-target="#vorgang" hx-swap="innerHTML">
-    <p class="muted">Meldung prüfen und als offiziellen Schaden in die Fahrzeugakte übernehmen.</p>
-    <button class="btn block" type="submit">In Fahrzeugakte übernehmen</button>
+    <p class="muted">{{ tr('damages.accept_hint') }}</p>
+    <button class="btn block" type="submit">{{ tr('damages.accept_into_record') }}</button>
   </form>
   {% endif %}
 
   {% if d.status.value in ['uebernommen','in_reparatur'] %}
   <form class="no-print" hx-post="/schaeden/{{ d.id }}/termin" hx-target="#vorgang" hx-swap="innerHTML" style="margin-bottom:14px">
-    <h2 style="margin-top:6px">📅 Werkstatttermin anlegen</h2>
-    <label for="titel">Titel</label>
-    <input id="titel" name="titel" value="Werkstatt: {{ d.beschreibung|truncate(30) }}" required>
-    <label for="faellig_am">Datum</label>
+    <h2 style="margin-top:6px">{{ tr('damages.create_appointment_title') }}</h2>
+    <label for="titel">{{ tr('tasks.col_title') }}</label>
+    <input id="titel" name="titel" value="{{ tr('damages.workshop_prefix', text=d.beschreibung|truncate(30)) }}" required>
+    <label for="faellig_am">{{ tr('damages.date') }}</label>
     <input id="faellig_am" name="faellig_am" type="date" value="{{ today().strftime('%Y-%m-%d') }}" required>
-    <button class="btn block sm" type="submit" style="margin-top:10px">Termin in Kalender anlegen</button>
+    <button class="btn block sm" type="submit" style="margin-top:10px">{{ tr('damages.create_appointment_btn') }}</button>
   </form>
 
   <form class="no-print" hx-post="/schaeden/{{ d.id }}/kosten" hx-target="#vorgang" hx-swap="innerHTML">
-    <h2>💶 Kosten ergänzen</h2>
-    <label for="betrag">Betrag (€)</label>
+    <h2>{{ tr('damages.add_costs_title') }}</h2>
+    <label for="betrag">{{ tr('damages.amount') }}</label>
     <input id="betrag" name="betrag" type="number" step="0.01" min="0" placeholder="0,00" required>
-    <label for="kategorie">Kategorie</label>
+    <label for="kategorie">{{ tr('damages.category') }}</label>
     <select id="kategorie" name="kategorie">
-      <option value="reparatur" selected>Reparatur</option>
-      <option value="werkstatt">Werkstatt</option>
-      <option value="wartung">Wartung</option>
-      <option value="reifen">Reifen</option>
-      <option value="sonstiges">Sonstiges</option>
+      <option value="reparatur" selected>{{ tr('cost_category.reparatur') }}</option>
+      <option value="werkstatt">{{ tr('cost_category.werkstatt') }}</option>
+      <option value="wartung">{{ tr('cost_category.wartung') }}</option>
+      <option value="reifen">{{ tr('cost_category.reifen') }}</option>
+      <option value="sonstiges">{{ tr('cost_category.sonstiges') }}</option>
     </select>
-    <label for="beschreibung">Beschreibung</label>
-    <input id="beschreibung" name="beschreibung" placeholder="z.B. Spiegel + Montage">
-    <button class="btn block sm" type="submit" style="margin-top:10px">Kosten buchen</button>
+    <label for="beschreibung">{{ tr('damages.description') }}</label>
+    <input id="beschreibung" name="beschreibung" placeholder="{{ tr('damages.description_placeholder') }}">
+    <button class="btn block sm" type="submit" style="margin-top:10px">{{ tr('damages.book_costs') }}</button>
   </form>
   {% endif %}
 
   {% if d.appointments %}
-  <h2 style="margin-top:14px">Termine zu diesem Schaden</h2>
+  <h2 style="margin-top:14px">{{ tr('damages.appointments_for_case') }}</h2>
   <div class="rowlist">
     {% for a in d.appointments %}
     <div class="row"><span class="dot tone-{{ ampel_tone(a.faellig_am) }}"></span>
@@ -60,10 +60,10 @@
   {% endif %}
 
   {% if d.costs %}
-  <h2 style="margin-top:14px">Gebuchte Kosten</h2>
+  <h2 style="margin-top:14px">{{ tr('damages.booked_costs') }}</h2>
   <div class="rowlist">
     {% for c in d.costs %}
-    <div class="row"><div class="grow"><div class="t">{{ c.kategorie_label }}</div>
+    <div class="row"><div class="grow"><div class="t">{{ tr('cost_category.' + c.kategorie.value) }}</div>
       <div class="s">{{ c.beschreibung }}</div></div><span class="t">{{ c.betrag|euro }}</span></div>
     {% endfor %}
   </div>
@@ -71,7 +71,7 @@
 
   {% if d.status.value == 'in_reparatur' %}
   <form class="no-print" hx-post="/schaeden/{{ d.id }}/erledigt" hx-target="#vorgang" hx-swap="innerHTML" style="margin-top:14px">
-    <button class="btn ok block sm" type="submit">✓ Reparatur abschließen</button>
+    <button class="btn ok block sm" type="submit">{{ tr('damages.complete_repair') }}</button>
   </form>
   {% endif %}
 </div>

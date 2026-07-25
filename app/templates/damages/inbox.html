@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Schäden · DispoHub{% endblock %}
+{% block title %}{{ tr('damages.title') }} · DispoHub{% endblock %}
 {% block content %}
-<div class="page-head"><h1>Schäden & Reparaturen</h1><span class="sub">{{ schaeden|length }} offene Vorgänge</span>
+<div class="page-head"><h1>{{ tr('damages.title') }}</h1><span class="sub">{{ tr('damages.open_count', n=schaeden|length) }}</span>
   <div class="spacer"></div>
-  <button type="button" class="btn ghost sm no-print" onclick="window.print()">🖨️ Drucken</button>
+  <button type="button" class="btn ghost sm no-print" onclick="window.print()">{{ tr('common.print') }}</button>
 </div>
 <div class="card">
   <div class="rowlist">
@@ -12,13 +12,13 @@
       <span class="dot tone-{{ d.priority_tone }}"></span>
       <div class="grow">
         <div class="t"><a href="/schaeden/{{ d.id }}">{{ d.vehicle.kennzeichen }} — {{ d.beschreibung|truncate(50) }}</a></div>
-        <div class="s">Gemeldet von {{ d.reporter.name if d.reporter else 'unbekannt' }} · {{ d.created_at.strftime('%d.%m.%Y %H:%M') }}
+        <div class="s">{{ tr('damages.reported_by', name=d.reporter.name if d.reporter else tr('damages.unknown')) }} · {{ d.created_at.strftime('%d.%m.%Y %H:%M') }}
           {% if d.documents %} · 📷 {{ d.documents|length }}{% endif %}</div>
       </div>
-      <span class="badge tone-{{ d.priority_tone }}">{{ d.priority_label }}</span>
-      <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ d.status_label }}</span>
+      <span class="badge tone-{{ d.priority_tone }}">{{ tr('priority.' + d.prioritaet.value) }}</span>
+      <span class="badge tone-{{ 'bad' if d.status.value == 'gemeldet' else 'info' }}">{{ tr('damage_status.' + d.status.value) }}</span>
     </div>
-    {% else %}<div class="empty">Keine offenen Schäden.</div>{% endfor %}
+    {% else %}<div class="empty">{{ tr('damages.no_open_damages') }}</div>{% endfor %}
   </div>
 </div>
 {% endblock %}
