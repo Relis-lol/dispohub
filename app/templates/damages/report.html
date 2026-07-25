@@ -65,7 +65,7 @@
         <label for="prioritaet">{{ tr('report.urgency') }}</label>
         <select id="prioritaet" name="prioritaet">
           {% for p in priorities %}
-          <option value="{{ p.value }}" {{ 'selected' if p.value == 'normal' }}>{{ priority_labels[p.value] }}</option>
+          <option value="{{ p.value }}" {{ 'selected' if p.value == 'normal' }}>{{ tr('priority.' + p.value) }}</option>
           {% endfor %}
         </select>
 

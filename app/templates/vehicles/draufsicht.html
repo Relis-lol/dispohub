@@ -1,17 +1,15 @@
 {% extends "base.html" %}
 {% import "partials/vehicle_svg.html" as vs %}
-{% block title %}Draufsicht {{ v.kennzeichen }} · DispoHub{% endblock %}
+{% block title %}{{ tr('draufsicht.title', kennzeichen=v.kennzeichen) }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Schaden-Draufsicht · {{ v.kennzeichen }}</h1>
-  <span class="sub">{{ v.typ_label }}{% if v.untertyp %} · {{ v.untertyp }}{% endif %}</span>
+  <h1>{{ tr('draufsicht.title', kennzeichen=v.kennzeichen) }}</h1>
+  <span class="sub">{{ tr('vehicle_typ.' + v.typ.value) }}{% if v.untertyp %} · {{ v.untertyp }}{% endif %}</span>
   <div class="spacer"></div>
-  <a href="/fahrzeuge/{{ v.id }}" class="btn ghost sm">← Fahrzeugakte</a>
+  <a href="/fahrzeuge/{{ v.id }}" class="btn ghost sm">{{ tr('draufsicht.back_record') }}</a>
 </div>
 
-<p class="muted">Auf die Stelle tippen, an der der Schaden ist — wie mit einem Stift.
-  Danach kurz beschreiben und speichern. Bestehende Markierungen anklicken, um den
-  Vorgang zu öffnen.</p>
+<p class="muted">{{ tr('draufsicht.hint') }}</p>
 
 <div class="draufsicht-wrap">
   <div id="diagram" class="draufsicht-diagram">
@@ -26,9 +24,9 @@
   </div>
 
   <div class="draufsicht-legend">
-    <span class="pin-legend tone-bad"></span> offen/in Bearbeitung
-    <span class="pin-legend tone-warn"></span> in Reparatur
-    <span class="pin-legend tone-ok"></span> repariert
+    <span class="pin-legend tone-bad"></span> {{ tr('draufsicht.legend_open') }}
+    <span class="pin-legend tone-warn"></span> {{ tr('draufsicht.legend_in_repair') }}
+    <span class="pin-legend tone-ok"></span> {{ tr('draufsicht.legend_repaired') }}
   </div>
 </div>
 
@@ -39,33 +37,33 @@
     <input type="hidden" name="schadensdatum" value="{{ today().strftime('%Y-%m-%d') }}" id="pin-datum-hidden">
 
     <div class="kulli-row">
-      <textarea id="beschreibung" name="beschreibung" placeholder="Was ist hier beschädigt? (kurz)"
+      <textarea id="beschreibung" name="beschreibung" placeholder="{{ tr('draufsicht.description_placeholder') }}"
                 required rows="2"></textarea>
-      <button class="btn" type="submit">✓ Speichern</button>
+      <button class="btn" type="submit">{{ tr('draufsicht.save') }}</button>
       <button type="button" class="btn ghost" id="pin-abbrechen">✕</button>
     </div>
 
     <details class="kulli-details">
-      <summary>+ Weitere Details (Ort, Datum, Fotos, Dringlichkeit — optional)</summary>
+      <summary>{{ tr('draufsicht.more_details') }}</summary>
       <div class="grid cols-2" style="margin-top:10px">
         <div>
-          <label for="schadensdatum">Wann entstanden?</label>
+          <label for="schadensdatum">{{ tr('draufsicht.when_happened') }}</label>
           <input id="schadensdatum" name="schadensdatum_sichtbar" type="date"
                  value="{{ today().strftime('%Y-%m-%d') }}"
                  onchange="document.getElementById('pin-datum-hidden').value=this.value">
         </div>
         <div>
-          <label for="ort">Wo entstanden?</label>
-          <input id="ort" name="ort" placeholder="z.B. Betriebshof, A9 Rasthof...">
+          <label for="ort">{{ tr('draufsicht.where_happened') }}</label>
+          <input id="ort" name="ort" placeholder="{{ tr('draufsicht.where_placeholder') }}">
         </div>
       </div>
-      <label for="prioritaet">Dringlichkeit</label>
+      <label for="prioritaet">{{ tr('draufsicht.urgency') }}</label>
       <select id="prioritaet" name="prioritaet">
         {% for p in priorities %}
-        <option value="{{ p.value }}" {{ 'selected' if p.value == 'normal' }}>{{ priority_labels[p.value] }}</option>
+        <option value="{{ p.value }}" {{ 'selected' if p.value == 'normal' }}>{{ tr('priority.' + p.value) }}</option>
         {% endfor %}
       </select>
-      <label for="fotos">Fotos</label>
+      <label for="fotos">{{ tr('draufsicht.photos') }}</label>
       <input id="fotos" name="fotos" type="file" accept="image/*" multiple>
     </details>
   </form>
