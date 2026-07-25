@@ -1,24 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Tankkarten · DispoHub{% endblock %}
+{% block title %}{{ tr('fuelcards.title') }} · DispoHub{% endblock %}
 {% block content %}
 <div class="page-head">
-  <h1>Tankkarten</h1>
-  <span class="sub">{{ karten|length }} Karten</span>
+  <h1>{{ tr('fuelcards.title') }}</h1>
+  <span class="sub">{{ tr('fuelcards.count', n=karten|length) }}</span>
   <div class="spacer"></div>
-  <a href="/tankkarten/beispiel.csv" class="btn ghost sm">⬇ Beispiel-CSV</a>
+  <a href="/tankkarten/beispiel.csv" class="btn ghost sm">{{ tr('fuelcards.example_csv') }}</a>
 </div>
 
 {% if result %}
 <div class="card" style="margin-bottom:16px">
-  <h2>Import-Ergebnis</h2>
+  <h2>{{ tr('fuelcards.import_result') }}</h2>
   <div class="rowlist">
-    <div class="row"><span class="grow t">✓ Importiert</span>
-      <span class="badge tone-ok">{{ result.importiert }} Buchungen · {{ result.summe|euro }}</span></div>
-    <div class="row"><span class="grow t">Duplikate übersprungen</span>
+    <div class="row"><span class="grow t">{{ tr('fuelcards.imported') }}</span>
+      <span class="badge tone-ok">{{ tr('fuelcards.entries_sum', n=result.importiert, sum=result.summe|euro) }}</span></div>
+    <div class="row"><span class="grow t">{{ tr('fuelcards.duplicates_skipped') }}</span>
       <span class="badge tone-{{ 'warn' if result.duplikate else 'muted' }}">{{ result.duplikate }}</span></div>
-    <div class="row"><span class="grow t">Unbekannte Karten</span>
+    <div class="row"><span class="grow t">{{ tr('fuelcards.unknown_cards') }}</span>
       <span class="badge tone-{{ 'bad' if result.unbekannte_karten else 'muted' }}">{{ result.unbekannte_karten }}</span></div>
-    <div class="row"><span class="grow t">Fehlerhafte Zeilen</span>
+    <div class="row"><span class="grow t">{{ tr('fuelcards.faulty_rows') }}</span>
       <span class="badge tone-{{ 'bad' if result.fehlerhafte_zeilen else 'muted' }}">{{ result.fehlerhafte_zeilen }}</span></div>
   </div>
   {% if result.hinweise %}
@@ -31,47 +31,45 @@
 
 <div class="grid cols-2">
   <div class="card">
-    <h2>📄 Abrechnung importieren (CSV)</h2>
-    <p class="muted">Format: <code>Datum;Kartennummer;Produkt;Menge;Betrag</code> —
-      Tankvorgänge werden automatisch als Kosten dem zugeordneten Fahrzeug gutgeschrieben.
-      Bereits importierte Buchungen werden erkannt und übersprungen.</p>
+    <h2>{{ tr('fuelcards.import_billing') }}</h2>
+    <p class="muted">{{ tr('fuelcards.import_hint') }}</p>
     <form method="post" action="/tankkarten/import" enctype="multipart/form-data">
-      <label for="datei">CSV-Datei</label>
+      <label for="datei">{{ tr('fuelcards.csv_file') }}</label>
       <input id="datei" name="datei" type="file" accept=".csv,text/csv" required>
       <div style="height:12px"></div>
-      <button class="btn block" type="submit">Importieren</button>
+      <button class="btn block" type="submit">{{ tr('fuelcards.import_btn') }}</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>➕ Karte anlegen</h2>
+    <h2>{{ tr('fuelcards.create_card') }}</h2>
     <form method="post" action="/tankkarten/karte">
-      <label for="kartennummer">Kartennummer</label>
+      <label for="kartennummer">{{ tr('fuelcards.card_number') }}</label>
       <input id="kartennummer" name="kartennummer" placeholder="z.B. DKV-1006" required>
-      <label for="anbieter">Anbieter</label>
+      <label for="anbieter">{{ tr('fuelcards.provider') }}</label>
       <input id="anbieter" name="anbieter" placeholder="z.B. DKV, Aral, Shell">
-      <label for="vehicle_id">Fahrzeug</label>
+      <label for="vehicle_id">{{ tr('fuelcards.vehicle') }}</label>
       <select id="vehicle_id" name="vehicle_id">
-        <option value="">— nicht zugeordnet —</option>
+        <option value="">{{ tr('common.not_assigned') }}</option>
         {% for v in fahrzeuge %}<option value="{{ v.id }}">{{ v.kennzeichen }} — {{ v.hersteller }} {{ v.modell }}</option>{% endfor %}
       </select>
       <div style="height:12px"></div>
-      <button class="btn block sm" type="submit">Karte speichern</button>
+      <button class="btn block sm" type="submit">{{ tr('fuelcards.save_card') }}</button>
     </form>
   </div>
 </div>
 
 <div class="card" style="margin-top:16px">
-  <h2>Karten &amp; Zuordnung</h2>
+  <h2>{{ tr('fuelcards.cards_assignment') }}</h2>
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>Kartennummer</th><th>Anbieter</th><th>Fahrzeug</th><th class="num">Buchungen</th></tr></thead>
+    <thead><tr><th>{{ tr('fuelcards.card_number') }}</th><th>{{ tr('fuelcards.provider') }}</th><th>{{ tr('fuelcards.vehicle') }}</th><th class="num">{{ tr('fuelcards.col_bookings') }}</th></tr></thead>
     <tbody>
     {% for k in karten %}
       <tr>
         <td><strong>{{ k.kartennummer }}</strong></td>
         <td>{{ k.anbieter or '—' }}</td>
-        <td>{% if k.vehicle %}<a href="/fahrzeuge/{{ k.vehicle.id }}">{{ k.vehicle.kennzeichen }}</a>{% else %}<span class="badge tone-warn">nicht zugeordnet</span>{% endif %}</td>
+        <td>{% if k.vehicle %}<a href="/fahrzeuge/{{ k.vehicle.id }}">{{ k.vehicle.kennzeichen }}</a>{% else %}<span class="badge tone-warn">{{ tr('fuelcards.not_assigned') }}</span>{% endif %}</td>
         <td class="num">{{ k.transactions|length }}</td>
       </tr>
     {% endfor %}
@@ -81,10 +79,10 @@
 </div>
 
 <div class="card" style="margin-top:16px">
-  <h2>Letzte Tankvorgänge</h2>
+  <h2>{{ tr('fuelcards.recent_transactions') }}</h2>
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>Datum</th><th>Karte</th><th>Fahrzeug</th><th>Produkt</th><th class="num">Menge</th><th class="num">Betrag</th></tr></thead>
+    <thead><tr><th>{{ tr('costs.col_date') }}</th><th>{{ tr('fuelcards.col_card') }}</th><th>{{ tr('fuelcards.vehicle') }}</th><th>{{ tr('fuelcards.col_product') }}</th><th class="num">{{ tr('fuelcards.col_quantity') }}</th><th class="num">{{ tr('fuelcards.col_amount') }}</th></tr></thead>
     <tbody>
     {% for t in letzte %}
       <tr>
@@ -95,7 +93,7 @@
         <td class="num">{{ ('%.2f'|format(t.menge_liter)).replace('.', ',') if t.menge_liter else '—' }} l</td>
         <td class="num">{{ t.betrag|euro }}</td>
       </tr>
-    {% else %}<tr><td colspan="6" class="empty">Noch keine Tankvorgänge importiert.</td></tr>{% endfor %}
+    {% else %}<tr><td colspan="6" class="empty">{{ tr('fuelcards.no_transactions_yet') }}</td></tr>{% endfor %}
     </tbody>
   </table>
   </div>
