@@ -1,3 +1,11 @@
+> **Project status: Archived / no longer actively maintained**
+>
+> DispoHub is a completed experimental open-source MVP and is no longer
+> under active development. The repository remains public as a reference
+> and can be freely forked under the MIT license.
+
+
+
 # DispoHub
 
 **Open-source dispatch and driver management system for small logistics and
